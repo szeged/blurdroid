@@ -1,0 +1,9 @@
+[package]
+name = "blurdroid"
+version = "0.1.0"
+authors = ["Attila Dusnoki <dati91@gmail.com>"]
+build = "build.rs"
+
+[lib]
+name = "blurdroid"
+path = "src/lib.rs"

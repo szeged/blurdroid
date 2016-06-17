@@ -18,9 +18,23 @@ impl BluetoothAdapter {
         }
     }
 
+    fn is_present(&self) -> bool {
+        println!("####IS_PRESENT####");
+        return unsafe { ffi::BluetoothAdapter_isEnabled().is_positive() };
+    }
+
+    fn check_present(&self) -> Result<(), Box<Error>> {
+        if self.is_present() {
+            println!("####ADAPTER_PRESENT####");
+            return Ok(())
+        }
+        Err(Box::from("Adapter Error: not present!"))
+    }
+
     pub fn get_address(&self) -> Result<String, Box<Error>> {
         unsafe {
             println!("####GET_ADDRESS####");
+            try!(self.check_present());
             let address = ffi::BluetoothAdapter_getAddress();
             Ok(utils::c_str_to_slice(&address).unwrap().to_owned())
         }
@@ -29,6 +43,7 @@ impl BluetoothAdapter {
     pub fn get_name(&self) -> Result<String, Box<Error>> {
         unsafe {
             println!("####GET_NAME####");
+            try!(self.check_present());
             let name = ffi::BluetoothAdapter_getName();
             Ok(utils::c_str_to_slice(&name).unwrap().to_owned())
         }
@@ -38,15 +53,15 @@ impl BluetoothAdapter {
         let mut v = vec!();
         unsafe {
             println!("####GET_BONDED_DEVICES####");
+            try!(self.check_present());
             let devices = ffi::BluetoothAdapter_getBondedDevices();
             println!("#### DEVICES PTR {:?} ####", devices);
-            //println!("#### {:?} ####", utils::c_str_to_slice(&devices).unwrap());
-            //for device in de
-            //v.push(utils::c_str_to_slice(&name).unwrap().to_owned());
-            let mut i = 0;
             let max = ffi::Helper_arraySize(devices) as isize;
+            //(0..max).map(|i| {
+            //CStr::from_ptr(*devices.offset(i)).to_bytes().to_vec()
+            //}).collect()
             println!("#### DEVICES LENGTH {:?} ####", max);
-            loop {
+            for i in 0..max {
                 let d_ptr = *devices.offset(i);
                 let d = match utils::c_str_to_slice(&d_ptr) {
                     None => break,
@@ -54,14 +69,7 @@ impl BluetoothAdapter {
                 };
                 println!("#### DEVICE #{}: {:?} ####", i, d);
                 v.push(d.clone());
-                i += 1;
-                if i == max {
-                    break;
-                }
             }
-            //(0..argc).map(|i| {
-            //CStr::from_ptr(*devices.offset(i)).to_bytes().to_vec()
-            //}).collect()
         }
         Ok(v)
     }

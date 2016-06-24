@@ -23,6 +23,7 @@ impl BluetoothDevice {
         return unsafe { ffi::Helper_setRemoteDevice(address.as_ptr() as *const c_char).is_positive()}
     }
 
+    // TODO remove this, we check isPresent in java
     fn check_present(&mut self) -> Result<(), Box<Error>> {
         println!("####CHECK_PRESENT####");
         if !self.present {
@@ -53,4 +54,39 @@ impl BluetoothDevice {
             Ok(utils::c_str_to_slice(&name).unwrap().to_owned())
         }
     }
+
+    pub fn connect(&mut self) -> Result<(), Box<Error>> {
+        println!("####CONNECT####");
+        try!(self.check_present());
+        unsafe {
+            Ok(ffi::BluetoothDevice_connectGatt())
+        }
+    }
+
+    pub fn get_gatt_services(&mut self) -> Result<Vec<String>, Box<Error>> {
+        let mut v = vec!();
+        unsafe {
+            println!("####GET_GATT_SERVICES####");
+            try!(self.check_present());
+            println!("####  discoverServices result: {:?}", ffi::BluetoothGatt_discoverServices());
+            let services = ffi::BluetoothGatt_getServices();
+            println!("#### SERVICE PTR {:?} ####", services);
+            let max = ffi::Helper_arraySize(services) as isize;
+            //(0..max).map(|i| {
+            //CStr::from_ptr(*devices.offset(i)).to_bytes().to_vec()
+            //}).collect()
+            println!("#### SERVICES LENGTH {:?} ####", max);
+            for i in 0..max {
+                let s_ptr = *services.offset(i);
+                let s = match utils::c_str_to_slice(&s_ptr) {
+                    None => break,
+                    Some(service) => service.to_owned(),
+                };
+                println!("#### SERVICE #{}: {:?} ####", i, s);
+                v.push(s.clone());
+            }
+        }
+        Ok(v)
+    }
+
 }

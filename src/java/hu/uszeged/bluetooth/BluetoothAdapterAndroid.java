@@ -6,21 +6,23 @@ import android.util.Log;
 import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.HashMap;
 
-final class BluetoothAdapterAndroid {
-    private static final String TAG = "BluetoothAdapterAndroid";
+final class BluetoothAdapterWrapper {
+    private static final String TAG = "BluetoothAdapterWrapper";
 
     private BluetoothAdapter mAdapter;
-    //private Set<BluetoothDeviceAndroid> mDevices;
+    private HashMap<String, BluetoothDeviceWrapper> mDevices;
 
-    public BluetoothAdapterAndroid(BluetoothAdapter adapter) {
+    public BluetoothAdapterWrapper(BluetoothAdapter adapter) {
         Log.i(TAG, "ctor");
         mAdapter = adapter;
+        mDevices = new HashMap<String, BluetoothDeviceWrapper>();
     }
 
-    public static BluetoothAdapterAndroid getAdapter() {
+    public static BluetoothAdapterWrapper getAdapter() {
         Log.i(TAG, "getAdapter");
-        return new BluetoothAdapterAndroid(
+        return new BluetoothAdapterWrapper(
             BluetoothAdapter.getDefaultAdapter());
     }
 
@@ -51,29 +53,26 @@ final class BluetoothAdapterAndroid {
         }
     }
 
-    private Set<BluetoothDevice> getBondedDevices() {
+    public Set<BluetoothDeviceWrapper> getDevices() {
+        return new HashSet<BluetoothDeviceWrapper>(mDevices.values());
+    }
+
+    public Set<BluetoothDeviceWrapper> getBondedDevices() {
         Log.i(TAG, "getBondedDevices");
-        if (isPresent()) {
-            return mAdapter.getBondedDevices();
-        } else {
-            return Collections.emptySet();
+        for (BluetoothDevice device : mAdapter.getBondedDevices()) {
+            mDevices.put(device.getAddress(), BluetoothDeviceWrapper.create(device));
         }
+        return getDevices();
     }
 
-    public Set<BluetoothDeviceAndroid> getDevices() {
-        Log.i(TAG, "getDevices");
-        Set<BluetoothDeviceAndroid> result = new HashSet<BluetoothDeviceAndroid>();
-        for (BluetoothDevice device : getBondedDevices()) {
-            result.add(BluetoothDeviceAndroid.create(device));
-        }
-        return result;
+    public int getDevicesSize() {
+        return mDevices.size();
     }
 
-    public BluetoothDeviceAndroid getRemoteDevice(String address) {
+    public BluetoothDeviceWrapper getRemoteDevice(String address) {
         Log.i(TAG, "getRemoteDevice");
         if (isPresent()) {
-            return BluetoothDeviceAndroid.create(
-                mAdapter.getRemoteDevice(address));
+            return mDevices.get(address);
         } else {
             return null;
         }

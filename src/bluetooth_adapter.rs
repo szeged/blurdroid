@@ -40,20 +40,23 @@ impl BluetoothAdapter {
             println!("####GET_DEVICES####");
             let devices = ffi::BluetoothAdapter_getDevices();
             println!("#### DEVICES PTR {:?} ####", devices);
-            let max = ffi::Helper_arraySize(devices) as isize;
+            let max = ffi::BluetoothAdapter_getDevicesSize() as isize;
             //(0..max).map(|i| {
             //CStr::from_ptr(*devices.offset(i)).to_bytes().to_vec()
             //}).collect()
             println!("#### DEVICES LENGTH {:?} ####", max);
             for i in 0..max {
+                println!("#### dev #{} ####", i);
                 let d_ptr = *devices.offset(i);
+                println!("#### dev offset {:?} ####", d_ptr);
                 let d = match utils::c_str_to_slice(&d_ptr) {
-                    None => break,
+                    None => continue,
                     Some(dev) => dev.to_owned(),
                 };
                 println!("#### DEVICE #{}: {:?} ####", i, d);
                 v.push(d.clone());
             }
+            ffi::Helper_freeCharArray(devices, max as i32);
         }
         Ok(v)
     }

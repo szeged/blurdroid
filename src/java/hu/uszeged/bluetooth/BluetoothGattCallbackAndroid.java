@@ -7,18 +7,18 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.util.Log;
 
-final class BluetoothGattCallbackAndroid extends BluetoothGattCallback {
-    private static final String TAG = "BluetoothGattCallbackAndroid";
+final class BluetoothGattCallbackWrapper extends BluetoothGattCallback {
+    private static final String TAG = "BluetoothGattCallbackWrapper";
 
-    private BluetoothDeviceAndroid mDevice;
+    private BluetoothDeviceWrapper mDevice;
 
-    public BluetoothGattCallbackAndroid(BluetoothDeviceAndroid device) {
+    public BluetoothGattCallbackWrapper(BluetoothDeviceWrapper device) {
         mDevice = device;
     }
 
-    public static BluetoothGattCallbackAndroid create(
-            BluetoothDeviceAndroid device) {
-        return new BluetoothGattCallbackAndroid(device);
+    public static BluetoothGattCallbackWrapper create(
+            BluetoothDeviceWrapper device) {
+        return new BluetoothGattCallbackWrapper(device);
     }
 
     @Override
@@ -54,6 +54,7 @@ final class BluetoothGattCallbackAndroid extends BluetoothGattCallback {
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
         Log.i(TAG, "onConnectionStateChange");
+        mDevice.getGatt().discoverServices();
     }
 
     @Override

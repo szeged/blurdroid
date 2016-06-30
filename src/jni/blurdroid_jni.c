@@ -338,7 +338,7 @@ void BluetoothAdapter_init() {
 
     // Device getCharacteristicsSize
     LOGI("Init device getCharacteristicsSize");
-    g_ctx.device_get_services_size =
+    g_ctx.device_get_characteristics_size =
         (*env)->GetMethodID(env, g_ctx.device_cls,
                             "getCharacteristicsSize",
                             "()"
@@ -346,7 +346,7 @@ void BluetoothAdapter_init() {
 
     // Device getDescriptorsSize
     LOGI("Init device getDescriptorsSize");
-    g_ctx.device_get_services_size =
+    g_ctx.device_get_descriptors_size =
         (*env)->GetMethodID(env, g_ctx.device_cls,
                             "getDescriptorsSize",
                             "()"

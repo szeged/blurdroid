@@ -16,6 +16,7 @@ final class BluetoothGattDescriptorWrapper {
         Log.i(TAG, "ctor");
         mDescriptor = descriptor;
         mDevice = device;
+        Log.i(TAG, "Descriptor: "+mDescriptor.getUuid().toString());
     }
 
     public static BluetoothGattDescriptorWrapper create(BluetoothGattDescriptor descriptor,

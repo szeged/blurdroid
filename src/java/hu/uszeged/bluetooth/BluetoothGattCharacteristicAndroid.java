@@ -18,6 +18,8 @@ final class BluetoothGattCharacteristicWrapper {
         Log.i(TAG, "ctor");
         mCharacteristic = characteristic;
         mDevice = device;
+        Log.i(TAG, "Characteristic: " + mCharacteristic.getUuid().toString());
+        Log.i(TAG, "Characteristic: " + mCharacteristic.getInstanceId());
     }
 
     public static BluetoothGattCharacteristicWrapper create(BluetoothGattCharacteristic characteristic,

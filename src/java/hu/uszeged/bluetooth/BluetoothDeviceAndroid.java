@@ -30,6 +30,7 @@ final class BluetoothDeviceWrapper {
         mServices = new HashMap<Integer, BluetoothGattServiceWrapper>();
         mCharacteristics = new HashMap<Integer, BluetoothGattCharacteristicWrapper>();
         mDescriptors = new HashMap<String, BluetoothGattDescriptorWrapper>();
+        Log.i(TAG, "device address: "+ mDevice.getAddress());
     }
 
     public static BluetoothDeviceWrapper create(BluetoothDevice device) {

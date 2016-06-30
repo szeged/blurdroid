@@ -53,12 +53,12 @@ final class BluetoothGattCallbackWrapper extends BluetoothGattCallback {
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-        Log.i(TAG, "onConnectionStateChange");
+        Log.i(TAG, "#### onConnectionStateChange ####");
         mDevice.getGatt().discoverServices();
     }
 
     @Override
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-        Log.i(TAG, "onServicesDiscovered");
+        Log.i(TAG, "#### onServicesDiscovered ####");
     }
 }

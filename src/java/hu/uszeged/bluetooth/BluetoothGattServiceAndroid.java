@@ -18,6 +18,8 @@ final class BluetoothGattServiceWrapper {
         Log.i(TAG, "ctor");
         mService = service;
         mDevice = device;
+        Log.i(TAG, "Service: "+mService.getUuid().toString());
+        Log.i(TAG, "Service: "+mService.getInstanceId());
     }
 
     public static BluetoothGattServiceWrapper create(BluetoothGattService service,

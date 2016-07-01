@@ -15,11 +15,13 @@ final class BluetoothAdapterWrapper {
 
     private BluetoothAdapter mAdapter;
     private HashMap<String, BluetoothDeviceWrapper> mDevices;
+    //private ArrayList<BluetoothDeviceWrapper> mDevices;
 
     public BluetoothAdapterWrapper(BluetoothAdapter adapter) {
         Log.i(TAG, "ctor");
         mAdapter = adapter;
         mDevices = new HashMap<String, BluetoothDeviceWrapper>();
+        //mDevices = new ArrayList<BluetoothDeviceWrapper>();
     }
 
     public static BluetoothAdapterWrapper getAdapter() {
@@ -56,18 +58,27 @@ final class BluetoothAdapterWrapper {
     }
 
     public Set<BluetoothDeviceWrapper> getDevices() {
+        Log.i(TAG, "getDevices");
         return new HashSet<BluetoothDeviceWrapper>(mDevices.values());
     }
 
     public Set<BluetoothDeviceWrapper> getBondedDevices() {
         Log.i(TAG, "getBondedDevices");
         for (BluetoothDevice device : mAdapter.getBondedDevices()) {
-            mDevices.put(device.getAddress(), BluetoothDeviceWrapper.create(device));
+            addDevice(device);
         }
         return getDevices();
     }
 
+    public void addDevice(BluetoothDevice device) {
+        Log.i(TAG, "addDevice");
+        if (!mDevices.containsKey(device.getAddress())) {
+            mDevices.put(device.getAddress(), BluetoothDeviceWrapper.create(device));
+        }
+    }
+
     public int getDevicesSize() {
+        Log.i(TAG, "getDevicesSize");
         return mDevices.size();
     }
 
@@ -106,4 +117,28 @@ final class BluetoothAdapterWrapper {
             return false;
         }
     }
+
+    public void startLeScan() {
+        Log.i(TAG, "startLeScan");
+        mAdapter.startLeScan(mLeScanCallback);
+    }
+
+    public void stopLeScan() {
+        Log.i(TAG, "stopLeScan");
+        mAdapter.stopLeScan(mLeScanCallback);
+    }
+
+    private BluetoothAdapter.LeScanCallback mLeScanCallback =
+            new BluetoothAdapter.LeScanCallback() {
+        @Override
+        public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+            //runOnUiThread(new Runnable() {
+            //    @Override
+            //    public void run() {
+            Log.i(TAG, "onLeScan");
+                    addDevice(device);
+            //    }
+            //});
+        }
+    };
 }

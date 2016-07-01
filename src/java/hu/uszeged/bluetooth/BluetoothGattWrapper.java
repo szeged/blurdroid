@@ -99,8 +99,22 @@ final class BluetoothGattWrapper {
             characteristic.get());
     }
 
+    public boolean writeCharacteristic(BluetoothGattCharacteristicWrapper characteristic, byte[] values) {
+        Log.i(TAG, "writeCharacteristic");
+        characteristic.setValue(values);
+        return mGatt.writeCharacteristic(
+            characteristic.get());
+    }
+
     public boolean writeDescriptor(BluetoothGattDescriptorWrapper descriptor) {
         Log.i(TAG, "writeDescriptor");
+        return mGatt.writeDescriptor(
+            descriptor.get());
+    }
+
+    public boolean writeDescriptor(BluetoothGattDescriptorWrapper descriptor, byte[] values) {
+        Log.i(TAG, "writeDescriptor");
+        descriptor.setValue(values);
         return mGatt.writeDescriptor(
             descriptor.get());
     }

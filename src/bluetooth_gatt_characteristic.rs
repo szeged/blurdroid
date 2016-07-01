@@ -36,6 +36,30 @@ impl BluetoothGATTCharacteristic {
         self.address.clone()
     }
 
+    /*pub fn get_value(&self) -> Result<Vec<u8>, Box<Error>> {
+        println!("####get_value####");
+        unsafe {
+            let values = ffi::BluetoothGattCharacteristic_getValue(self.address.clone().as_ptr() as *const c_char, self.id);
+            Ok(utils::c_str_to_slice(&values).unwrap().to_owned())
+        }
+    }
+
+    pub fn read_value(&self) -> Result<Vec<u8>, Box<Error>> {
+        println!("####read_value####");
+        unsafe {
+            ffi::BluetoothGattCharacteristic_readCharacteristic(self.address.clone().as_ptr() as *const c_char, self.id);
+        }
+        self.get_value()
+    }
+
+    pub fn write_value(&self, values: Vec<u8>) -> Result<(), Box<Error>> {
+        println!("####read_value####");
+        unsafe {
+            ffi::BluetoothGattCharacteristic_writeCharacteristic(self.address.clone().as_ptr() as *const c_char, self.id);
+        }
+        Ok(())
+    }*/
+
     pub fn get_gatt_descriptors(&mut self) -> Result<Vec<String>, Box<Error>> {
         println!("####GET_GATT_DESCRIPTORS####");
         let mut v = vec!();

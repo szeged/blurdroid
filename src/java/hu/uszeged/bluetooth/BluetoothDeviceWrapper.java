@@ -83,6 +83,7 @@ final class BluetoothDeviceWrapper {
     }
 
     public int getServicesSize() {
+        Log.i(TAG, "getServicesSize");
         return mServices.values().size();
     }
 
@@ -103,6 +104,7 @@ final class BluetoothDeviceWrapper {
     }
 
     public int getCharacteristicsSize() {
+        Log.i(TAG, "getCharacteristicsSize");
         return mCharacteristics.values().size();
     }
 
@@ -123,6 +125,7 @@ final class BluetoothDeviceWrapper {
     }
 
     public int getDescriptorsSize() {
+        Log.i(TAG, "getDescriptorsSize");
         return mServices.values().size();
     }
 }

@@ -13,11 +13,13 @@ final class BluetoothGattCallbackWrapper extends BluetoothGattCallback {
     private BluetoothDeviceWrapper mDevice;
 
     public BluetoothGattCallbackWrapper(BluetoothDeviceWrapper device) {
+        Log.i(TAG, "ctor");
         mDevice = device;
     }
 
     public static BluetoothGattCallbackWrapper create(
             BluetoothDeviceWrapper device) {
+        Log.i(TAG, "create");
         return new BluetoothGattCallbackWrapper(device);
     }
 

@@ -44,11 +44,14 @@ typedef struct {
     jmethodID adapter_get_address;
     jmethodID adapter_get_name;
     jmethodID adapter_get_bonded_devices;
+    jmethodID adapter_get_devices;
     jmethodID adapter_get_devices_size;
     jmethodID adapter_get_remote_device;
     jmethodID adapter_is_enabled;
     jmethodID adapter_enable;
     jmethodID adapter_disable;
+    jmethodID adapter_start_le_scan;
+    jmethodID adapter_stop_le_scan;
     // device
     jclass device_cls;
     //jobject device_obj;
@@ -228,6 +231,13 @@ void BluetoothAdapter_init() {
                             "getName",
                             "()Ljava/lang/String;");
 
+    // Adapter getDevices
+    LOGI("Init adapter getDevices");
+    g_ctx.adapter_get_devices =
+        (*env)->GetMethodID(env, g_ctx.adapter_cls,
+                            "getDevices",
+                            "()Ljava/util/Set;");
+
     // Adapter getBondedDevices
     LOGI("Init adapter getBondedDevices");
     g_ctx.adapter_get_bonded_devices =
@@ -269,6 +279,20 @@ void BluetoothAdapter_init() {
         (*env)->GetMethodID(env, g_ctx.adapter_cls,
                             "disable",
                             "()Z");
+
+    // Adapter startLeScan
+    LOGI("Init adapter startLeScan");
+    g_ctx.adapter_start_le_scan =
+        (*env)->GetMethodID(env, g_ctx.adapter_cls,
+                            "startLeScan",
+                            "()V");
+
+    // Adapter stopLeScan
+    LOGI("Init adapter stopLeScan");
+    g_ctx.adapter_stop_le_scan =
+        (*env)->GetMethodID(env, g_ctx.adapter_cls,
+                            "stopLeScan",
+                            "()V");
 
     // Device class
     LOGI("Init device class");
@@ -637,7 +661,7 @@ const char** BluetoothAdapter_getDevices() {
         return NULL;
     }
     jobject set = (jobject)
-        (*env)->CallObjectMethod(env, g_ctx.adapter_obj, g_ctx.adapter_get_bonded_devices);
+        (*env)->CallObjectMethod(env, g_ctx.adapter_obj, g_ctx.adapter_get_devices);
     // Obtain an iterator over the Set
     jclass setClass = (*env)->FindClass(env, "java/util/Set");
     jmethodID iterator =
@@ -694,12 +718,35 @@ int BluetoothAdapter_getDevicesSize() {
     return (*env)->CallIntMethod(env, g_ctx.adapter_obj, g_ctx.adapter_get_devices_size);
 }
 
+void BluetoothAdapter_startDiscovery() {
+    LOGI("BluetoothAdapter_startDiscovery");
+    JNIEnv *env = Helper_getEnv();
+    if (env == NULL) {
+        return 0;
+    }
+    (*env)->CallVoidMethod(env, g_ctx.adapter_obj, g_ctx.adapter_start_le_scan);
+}
+
+void BluetoothAdapter_stopDiscovery() {
+    LOGI("BluetoothAdapter_stopDiscovery");
+    JNIEnv *env = Helper_getEnv();
+    if (env == NULL) {
+        return 0;
+    }
+    (*env)->CallVoidMethod(env, g_ctx.adapter_obj, g_ctx.adapter_stop_le_scan);
+}
+
 void Helper_freeCharArray(char** arr, size_t num_elements) {
     LOGI("Helper_freeCharArray");
     size_t i;
     for (i = 0; i < num_elements; i++ ) {
         free(arr[i]);
     }
+    free(arr);
+}
+
+void Helper_freeUChar(unsigned char* arr) {
+    LOGI("Helper_freeUChar");
     free(arr);
 }
 
@@ -1045,6 +1092,35 @@ const char* BluetoothGattCharacteristic_getUuid(const char* address, const int i
         (*env)->CallObjectMethod(env, characteristic, g_ctx.characteristic_get_uuid);
     return (*env)->GetStringUTFChars(env, strUuid, NULL);
 }
+
+/*const unsigned char* BluetoothGattCharacteristic_getValue(const char* address, const int id) {
+    LOGI("BluetoothGattCharacteristic_getValue");
+    JNIEnv *env = Helper_getEnv();
+    if (env == NULL) {
+        return NULL;
+    }
+    jobject characteristic = BluetoothDevice_getCharacteristic(env, address, id);
+    if (characteristic == NULL) {
+        return NULL;
+    }
+    jbyteArray array = (jbyteArray)
+        (*env)->CallObjectMethod(env, characteristic, g_ctx.characteristic_get_value);
+
+    int len = (*env)->GetArrayLength (env, array);
+    jboolean isCopy;
+    unsigned char* buf = (const unsigned char*) (*env)->GetByteArrayElements(env, array, &isCopy);
+    //if (content_array == NULL)
+    //return 0;
+    unsigned char* result = calloc(len, sizeof *result);
+    memcpy(result, buf, strlen(buf)+1);
+    if (isCopy) {
+        (*env)->ReleaseByteArrayElements(env, array, buf, JNI_ABORT);
+    }
+    return result;
+}*/
+
+/*void BluetoothGattCharacteristic_setValue(const char* address, const int id, const unsigned char* values) {
+}*/
 
 const char** BluetoothGattCharacteristic_getDescriptors(const char* address, const int id) {
     LOGI("BluetoothGattCharacteristic_getDescriptors");

@@ -51,8 +51,9 @@ typedef struct {
     //jobject device_obj;
     jmethodID device_get_address;
     jmethodID device_get_name;
-    /*jmethodID device_connect_gatt;
-    jmethodID device_get_gatt;
+    jmethodID device_connect_gatt;
+    jmethodID device_is_connected;
+    /*jmethodID device_get_gatt;
     jmethodID device_get_service;
     jmethodID device_get_characteristic;
     jmethodID device_get_descriptor;
@@ -113,5 +114,7 @@ int jni_adapter_get_devices_size(jobject);
 jobject jni_adapter_create_device();
 const char* jni_device_get_address(jobject);
 const char* jni_device_get_name(jobject);
+void jni_device_connect_gatt(jobject);
+int jni_device_is_connected(jobject);
 
 #endif /* JNI_UTILS_H */

@@ -21,8 +21,10 @@ extern {
     pub fn bluetooth_adapter_free_string_array(string: *const *const c_char);
 
     pub fn bluetooth_device_create_device(adapter: *mut BluetoothAdapter, address: *const c_char) -> *mut BluetoothDevice;
-    pub fn bluetooth_device_get_address(adapter: *mut BluetoothDevice) -> *const c_char;
-    pub fn bluetooth_device_get_name(adapter: *mut BluetoothDevice) -> *const c_char;
-    pub fn bluetooth_device_free_device(adapter: *mut BluetoothDevice);
+    pub fn bluetooth_device_get_address(device: *mut BluetoothDevice) -> *const c_char;
+    pub fn bluetooth_device_get_name(device: *mut BluetoothDevice) -> *const c_char;
+    pub fn bluetooth_device_connect_gatt(device: *mut BluetoothDevice);
+    pub fn bluetooth_device_is_connected(device: *mut BluetoothDevice) -> c_int;
+    pub fn bluetooth_device_free_device(device: *mut BluetoothDevice);
     pub fn bluetooth_device_free_string(string: *const c_char);
 }

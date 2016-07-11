@@ -36,6 +36,23 @@ bluetooth_device_get_name (BluetoothDevice *device)
 }
 
 void
+bluetooth_device_connect_gatt (BluetoothDevice *device)
+{
+    LOGI("bluetooth_device_connect_gatt\n");
+    LOGI("d->d: %d\n", device->device);
+    jni_device_connect_gatt (device->device);
+}
+
+int
+bluetooth_device_is_connected (BluetoothDevice *device)
+{
+    LOGI("bluetooth_device_is_connected\n");
+    LOGI("d->d: %d\n", device->device);
+    return jni_device_is_connected (device->device);
+}
+
+
+void
 bluetooth_device_free_device (BluetoothDevice *device) {
     LOGI("bluetooth_device_free_device\n");
     LOGI("d->d: %d\n", device->device);

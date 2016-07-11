@@ -62,6 +62,20 @@ impl Device {
         unsafe { ffi::bluetooth_device_free_string(name) };
         res
     }
+
+    pub fn connect(&mut self) -> Result<(), Box<Error>> {
+        println!("{} Device connect {:?}", time::precise_time_ns(), self.device());
+        unsafe {
+            Ok(ffi::bluetooth_device_connect_gatt(self.device()))
+        }
+    }
+
+    pub fn is_connected(&mut self) -> Result<bool, Box<Error>> {
+        println!("{} Device is_connected {:?}", time::precise_time_ns(), self.device());
+        unsafe {
+            Ok(ffi::bluetooth_device_is_connected(self.device()).is_positive())
+        }
+    }
 }
 
 impl Drop for Device {

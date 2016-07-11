@@ -176,6 +176,20 @@ jobject jni_adapter_create_adapter () {
                             "getName",
                             "()Ljava/lang/String;");
 
+    // Device isConnected
+    LOGI("Init device isConnected");
+    g_ctx.device_is_connected =
+        (*env)->GetMethodID(env, g_ctx.device_cls,
+                            "isConnected",
+                            "()Z");
+
+    // Device connectGatt
+    LOGI("Init device connectGatt");
+    g_ctx.device_connect_gatt =
+        (*env)->GetMethodID(env, g_ctx.device_cls,
+                            "connectGatt",
+                            "(Landroid/content/Context;Z)"
+                            "Lhu/uszeged/bluetooth/BluetoothGattWrapper;");
 
     // Adapter object
     LOGI("Init adapter object");
@@ -335,4 +349,41 @@ const char* jni_device_get_name(jobject device) {
     //(*env)->ReleaseStringUTFChars(env, strName, name);
     (*env)->DeleteLocalRef(env, strName);
     return name;
+}
+
+void jni_device_connect_gatt(jobject device) {
+    LOGI("jni_device_connect_gatt");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return;
+    }
+    //TODO move the context to the java side
+    jclass theClass = (*env)->FindClass(env,"android/app/ActivityThread");
+    if(!theClass){LOGE("#### failed to get android/app/ActivityThread ####");}
+    else{LOGI("#### got android/app/ActivityThread = %p ####", theClass);}
+
+    jmethodID method = (*env)->GetStaticMethodID(env,theClass,"currentApplication","()Landroid/app/Application;");
+    if(!method){LOGE("#### failed to get currentApplication ####");}
+    else{LOGI("#### got currentApplication = %ld ####",(long) method);}
+
+    jobject context = (*env)->CallStaticObjectMethod(env,theClass,method);
+    if(!context){LOGE("#### failed to get context ####");}
+    else{LOGI("#### got context ####");}
+    //g_ctx.context_obj = (*env)->NewGlobalRef(env, context);
+
+    LOGI("BluetoothDevice_connectGatt CallObjectMethod connectGatt");
+    (*env)->CallObjectMethod(env, device,
+                             g_ctx.device_connect_gatt,
+                             context,
+                             JNI_FALSE);
+    LOGI("BluetoothDevice_connectGatt done");
+}
+
+int jni_device_is_connected(jobject device) {
+    LOGI("jni_device_is_connected");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    return (*env)->CallBooleanMethod(env, device, g_ctx.device_is_connected);
 }

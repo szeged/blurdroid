@@ -20,6 +20,8 @@ BluetoothDevice* bluetooth_device_create_device (BluetoothAdapter*, const char*)
 
 const char* bluetooth_device_get_address (BluetoothDevice*);
 const char* bluetooth_device_get_name (BluetoothDevice*);
+void bluetooth_device_connect_gatt (BluetoothDevice*);
+int bluetooth_device_is_connected (BluetoothDevice*);
 
 void bluetooth_device_free_device (BluetoothDevice*);
 void bluetooth_device_free_string (const char*);

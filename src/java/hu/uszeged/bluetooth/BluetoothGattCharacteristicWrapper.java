@@ -12,25 +12,25 @@ final class BluetoothGattCharacteristicWrapper {
 
     private BluetoothGattCharacteristic mCharacteristic;
     private BluetoothDeviceWrapper mDevice;
+    private int mId;
 
     public BluetoothGattCharacteristicWrapper(BluetoothGattCharacteristic characteristic,
-        BluetoothDeviceWrapper device) {
+        BluetoothDeviceWrapper device, int id) {
         Log.i(TAG, "###################<");
         Log.i(TAG, "ctor");
         Log.i(TAG, "###################>");
         mCharacteristic = characteristic;
         mDevice = device;
+        mId = id;
         Log.i(TAG, "Characteristic: " + mCharacteristic.getUuid().toString());
-        Log.i(TAG, "Characteristic: " + mCharacteristic.getInstanceId());
-        Log.i(TAG, "Characteristic: " + mCharacteristic.hashCode());
     }
 
     public static BluetoothGattCharacteristicWrapper create(BluetoothGattCharacteristic characteristic,
-        BluetoothDeviceWrapper device) {
+        BluetoothDeviceWrapper device, int id) {
         Log.i(TAG, "###################<");
         Log.i(TAG, "create");
         Log.i(TAG, "###################>");
-        return new BluetoothGattCharacteristicWrapper(characteristic, device);
+        return new BluetoothGattCharacteristicWrapper(characteristic, device, id);
     }
 
     public BluetoothGattCharacteristic get() {
@@ -38,6 +38,10 @@ final class BluetoothGattCharacteristicWrapper {
         Log.i(TAG, "writeDescriptor");
         Log.i(TAG, "###################>");
         return mCharacteristic;
+    }
+
+    public int getId() {
+        return mId;
     }
 
     public String getUuid() {
@@ -87,6 +91,13 @@ final class BluetoothGattCharacteristicWrapper {
         Log.i(TAG, "getDescriptor "+id);
         Log.i(TAG, "###################>");
         return mDevice.getDescriptor(id);
+    }
+
+    public int getDescriptorsSize() {
+        Log.i(TAG, "###################<");
+        Log.i(TAG, "getDescriptorsSize");
+        Log.i(TAG, "###################>");
+        return mDevice.getDescriptorsSize();
     }
 
     public byte[] getValue() {

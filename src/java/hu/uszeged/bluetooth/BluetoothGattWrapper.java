@@ -101,6 +101,13 @@ final class BluetoothGattWrapper {
         return mDevice.getServices();
     }
 
+    public int getServicesSize() {
+        Log.i(TAG, "###################<");
+        Log.i(TAG, "getServicesSize");
+        Log.i(TAG, "###################>");
+        return mDevice.getServicesSize();
+    }
+
     public boolean readCharacteristic(BluetoothGattCharacteristicWrapper characteristic) {
         Log.i(TAG, "###################<");
         Log.i(TAG, "readCharacteristic");

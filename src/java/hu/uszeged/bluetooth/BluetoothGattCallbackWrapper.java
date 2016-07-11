@@ -71,8 +71,8 @@ final class BluetoothGattCallbackWrapper extends BluetoothGattCallback {
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
         Log.i(TAG, "###################<");
         Log.i(TAG, "#### onConnectionStateChange ####");
-        Log.i(TAG, "status: " status + " " + (status == BluetoothGatt.GATT_SUCCESS ? "Success" : "Failure"));
-        Log.i(TAG, "newState: "+newState);
+        Log.i(TAG, "status: " + status + " " + (status == BluetoothGatt.GATT_SUCCESS ? "Success" : "Failure"));
+        Log.i(TAG, "newState: " + newState);
         mDevice.setConnected(newState == BluetoothGatt.STATE_CONNECTED);
         if (status == BluetoothGatt.GATT_SUCCESS) {
             if (newState == BluetoothGatt.STATE_CONNECTED) {

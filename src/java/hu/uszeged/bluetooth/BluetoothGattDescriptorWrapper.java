@@ -10,24 +10,25 @@ final class BluetoothGattDescriptorWrapper {
 
     private BluetoothGattDescriptor mDescriptor;
     private BluetoothDeviceWrapper mDevice;
+    private int mId;
 
     public BluetoothGattDescriptorWrapper(BluetoothGattDescriptor descriptor,
-        BluetoothDeviceWrapper device) {
+        BluetoothDeviceWrapper device, int id) {
         Log.i(TAG, "###################<");
         Log.i(TAG, "ctor");
         Log.i(TAG, "###################>");
         mDescriptor = descriptor;
         mDevice = device;
+        mId = id;
         Log.i(TAG, "Descriptor: "+mDescriptor.getUuid().toString());
-        Log.i(TAG, "Descriptor: " + mDescriptor.hashCode());
     }
 
     public static BluetoothGattDescriptorWrapper create(BluetoothGattDescriptor descriptor,
-        BluetoothDeviceWrapper device) {
+        BluetoothDeviceWrapper device, int id) {
         Log.i(TAG, "###################<");
         Log.i(TAG, "create");
         Log.i(TAG, "###################>");
-        return new BluetoothGattDescriptorWrapper(descriptor, device);
+        return new BluetoothGattDescriptorWrapper(descriptor, device, id);
     }
 
     public BluetoothGattDescriptor get() {
@@ -35,6 +36,10 @@ final class BluetoothGattDescriptorWrapper {
         Log.i(TAG, "get");
         Log.i(TAG, "###################>");
         return mDescriptor;
+    }
+
+    public int getId() {
+        return mId;
     }
 
     public String getUuid() {

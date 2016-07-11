@@ -12,25 +12,25 @@ final class BluetoothGattServiceWrapper {
 
     private BluetoothGattService mService;
     private BluetoothDeviceWrapper mDevice;
+    private int mId;
 
     public BluetoothGattServiceWrapper(BluetoothGattService service,
-        BluetoothDeviceWrapper device) {
+        BluetoothDeviceWrapper device, int id) {
         Log.i(TAG, "###################<");
         Log.i(TAG, "ctor");
         Log.i(TAG, "###################>");
         mService = service;
         mDevice = device;
+        mId = id;
         Log.i(TAG, "Service: "+mService.getUuid().toString());
-        Log.i(TAG, "Service: "+mService.getInstanceId());
-        Log.i(TAG, "Service: " + mService.hashCode());
     }
 
     public static BluetoothGattServiceWrapper create(BluetoothGattService service,
-        BluetoothDeviceWrapper device) {
+        BluetoothDeviceWrapper device, int id) {
         Log.i(TAG, "###################<");
         Log.i(TAG, "create");
         Log.i(TAG, "###################>");
-        return new BluetoothGattServiceWrapper(service, device);
+        return new BluetoothGattServiceWrapper(service, device, id);
     }
 
     public BluetoothGattService get() {
@@ -38,6 +38,10 @@ final class BluetoothGattServiceWrapper {
         Log.i(TAG, "get");
         Log.i(TAG, "###################>");
         return mService;
+    }
+
+    public int getId() {
+        return mId;
     }
 
     public String getUuid() {
@@ -98,6 +102,13 @@ final class BluetoothGattServiceWrapper {
         return mDevice.getCharacteristic(id);
     }
 
+    public int getCharacteristicsSize() {
+        Log.i(TAG, "###################<");
+        Log.i(TAG, "getCharacteristicsSize");
+        Log.i(TAG, "###################>");
+        return mDevice.getCharacteristicsSize();
+    }
+
     //TODO Set -> List
     public Set<BluetoothGattServiceWrapper> getIncludedServices() {
         Log.i(TAG, "###################<");
@@ -106,7 +117,7 @@ final class BluetoothGattServiceWrapper {
         Set<BluetoothGattServiceWrapper> result
             = new HashSet<BluetoothGattServiceWrapper>();
         for (BluetoothGattService service : mService.getIncludedServices()) {
-            result.add(BluetoothGattServiceWrapper.create(service, mDevice));
+            result.add(BluetoothGattServiceWrapper.create(service, mDevice, service.hashCode()));
         }
         return result;
     }

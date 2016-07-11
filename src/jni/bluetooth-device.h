@@ -22,9 +22,11 @@ const char* bluetooth_device_get_address (BluetoothDevice*);
 const char* bluetooth_device_get_name (BluetoothDevice*);
 void bluetooth_device_connect_gatt (BluetoothDevice*);
 int bluetooth_device_is_connected (BluetoothDevice*);
-
+const int* bluetooth_device_get_gatt_services (BluetoothDevice*);
+int bluetooth_device_get_gatt_services_size (BluetoothDevice*);
 void bluetooth_device_free_device (BluetoothDevice*);
 void bluetooth_device_free_string (const char*);
+void bluetooth_device_free_int_array (int*);
 
 #ifdef __cplusplus
 }; /* extern "C" */

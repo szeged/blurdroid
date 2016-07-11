@@ -48,73 +48,94 @@ typedef struct {
     jmethodID adapter_stop_le_scan;
     // device
     jclass device_cls;
-    //jobject device_obj;
     jmethodID device_get_address;
     jmethodID device_get_name;
     jmethodID device_connect_gatt;
     jmethodID device_is_connected;
-    /*jmethodID device_get_gatt;
-    jmethodID device_get_service;
-    jmethodID device_get_characteristic;
-    jmethodID device_get_descriptor;
-    jmethodID device_get_services_size;
-    jmethodID device_get_characteristics_size;
-    jmethodID device_get_descriptors_size;
+    jmethodID device_get_gatt;
+    //jmethodID device_get_gatt_service;
+    //jmethodID device_get_gatt_characteristic;
+    //jmethodID device_get_gatt_descriptor;
+    //jmethodID device_get_gatt_services_size;
+    //jmethodID device_get_gatt_characteristics_size;
+    //jmethodID device_get_gatt_descriptors_size;
     // gatt
     jclass gatt_cls;
-    //jobject gatt_obj;
-    jmethodID gatt_connect;
-    jmethodID gatt_disconnect;
-    jmethodID gatt_discover_services;
-    jmethodID gatt_get_service;
-    jmethodID gatt_get_service_id;
-    jmethodID gatt_get_services;
-    jmethodID gatt_read_characteristic;
-    jmethodID gatt_read_descriptor;
-    jmethodID gatt_write_characteristic;
-    jmethodID gatt_write_descriptor;
+    //jmethodID gatt_connect;
+    //jmethodID gatt_disconnect;
+    //jmethodID gatt_discover_services;
+    jmethodID gatt_get_gatt_services;
+    jmethodID gatt_get_gatt_service;
+    jmethodID gatt_get_gatt_services_size;
+    //jmethodID gatt_read_characteristic;
+    //jmethodID gatt_read_descriptor;
+    //jmethodID gatt_write_characteristic;
+    //jmethodID gatt_write_descriptor;
     // gatt service
     jclass service_cls;
-    //jobject service_obj;
+    jmethodID service_get_id;
     jmethodID service_get_uuid;
-    jmethodID service_get_instance_id;
-    jmethodID service_get_type;
+    //jmethodID service_get_instance_id;
+    //jmethodID service_get_type;
     jmethodID service_is_primary;
-    jmethodID service_get_characteristic;
-    jmethodID service_get_characteristic_id;
-    jmethodID service_get_characteristics;
-    jmethodID service_get_included_services;
+    jmethodID service_get_gatt_characteristics;
+    jmethodID service_get_gatt_characteristic;
+    jmethodID service_get_gatt_characteristics_size;
+    //jmethodID service_get_included_services;
     // gatt characteristic
     jclass characteristic_cls;
-    //jobject characteristic_obj;
+    jmethodID characteristic_get_id;
     jmethodID characteristic_get_uuid;
-    jmethodID characteristic_get_instance_id;
-    jmethodID characteristic_get_descriptor;
-    jmethodID characteristic_get_descriptors;
-    jmethodID characteristic_get_value;
-    jmethodID characteristic_set_value;
+    //jmethodID characteristic_get_instance_id;
+    jmethodID characteristic_get_gatt_descriptors;
+    jmethodID characteristic_get_gatt_descriptor;
+    jmethodID characteristic_get_gatt_descriptors_size;
+    //jmethodID characteristic_get_value;
+    //jmethodID characteristic_set_value;
     // gatt descriptor
     jclass descriptor_cls;
-    //jobject descriptor_obj;
+    jmethodID descriptor_get_id;
     jmethodID descriptor_get_uuid;
-    jmethodID descriptor_get_value;
-    jmethodID descriptor_set_value;*/
+    //jmethodID descriptor_get_value;
+    //jmethodID descriptor_set_value;
 } BTContext;
 
 BTContext g_ctx;
 
-//void jni_adapter_create_adapter(jobject*);
-jobject jni_adapter_create_adapter();
-const char* jni_adapter_get_address(jobject);
-const char* jni_adapter_get_name(jobject);
-void jni_adapter_start_discovery(jobject);
-void jni_adapter_stop_discovery(jobject);
-const char** jni_adapter_get_devices(jobject);
-int jni_adapter_get_devices_size(jobject);
-jobject jni_adapter_create_device();
-const char* jni_device_get_address(jobject);
-const char* jni_device_get_name(jobject);
-void jni_device_connect_gatt(jobject);
-int jni_device_is_connected(jobject);
+// adapter
+jobject jni_adapter_create_adapter ();
+const char* jni_adapter_get_address (jobject);
+const char* jni_adapter_get_name (jobject);
+void jni_adapter_start_discovery (jobject);
+void jni_adapter_stop_discovery (jobject);
+const char** jni_adapter_get_devices (jobject);
+int jni_adapter_get_devices_size (jobject);
+
+// device
+jobject jni_adapter_create_device (jobject, const char*);
+const char* jni_device_get_address (jobject);
+const char* jni_device_get_name (jobject);
+void jni_device_connect_gatt (jobject);
+int jni_device_is_connected (jobject);
+const int* jni_device_get_gatt_services (jobject);
+int jni_device_get_gatt_services_size (jobject);
+
+// service
+jobject jni_device_create_service(jobject, int);
+const char* jni_service_get_uuid(jobject);
+int jni_service_is_primary(jobject);
+const int* jni_service_get_gatt_characteristics (jobject);
+int jni_service_get_gatt_characteristics_size (jobject);
+
+// characteristic
+jobject jni_service_create_characteristic(jobject, int);
+const char* jni_characteristic_get_uuid(jobject);
+int jni_characteristic_is_primary(jobject);
+const int* jni_characteristic_get_gatt_descriptors (jobject);
+int jni_characteristic_get_gatt_descriptors_size (jobject);
+
+// descriptor
+jobject jni_characteristic_create_descriptor(jobject, int);
+const char* jni_descriptor_get_uuid(jobject);
 
 #endif /* JNI_UTILS_H */

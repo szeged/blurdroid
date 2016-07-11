@@ -191,6 +191,153 @@ jobject jni_adapter_create_adapter () {
                             "(Landroid/content/Context;Z)"
                             "Lhu/uszeged/bluetooth/BluetoothGattWrapper;");
 
+    // Device getGatt
+    LOGI("Init device getGatt");
+    g_ctx.device_get_gatt =
+        (*env)->GetMethodID(env, g_ctx.device_cls,
+                            "getGatt",
+                            "()Lhu/uszeged/bluetooth/BluetoothGattWrapper;");
+
+    // Gatt class
+    LOGI("Init gatt class");
+    jclass classBtg = jni_find_class(env, "hu/uszeged/bluetooth/BluetoothGattWrapper");
+    g_ctx.gatt_cls = (*env)->NewGlobalRef(env, classBtg);
+
+    // Gatt getServices
+    LOGI("Init gatt getServices");
+    g_ctx.gatt_get_gatt_services =
+        (*env)->GetMethodID(env, g_ctx.gatt_cls,
+                            "getServices",
+                            "()Ljava/util/Set;");
+
+    // Gatt getService
+    LOGI("Init gatt getService");
+    g_ctx.gatt_get_gatt_service =
+        (*env)->GetMethodID(env, g_ctx.gatt_cls,
+                            "getService",
+                            "(I)"
+                            "Lhu/uszeged/bluetooth/BluetoothGattServiceWrapper;");
+
+    // Gatt getServicesSize
+    LOGI("Init gatt getServicesSize");
+    g_ctx.gatt_get_gatt_services_size =
+        (*env)->GetMethodID(env, g_ctx.gatt_cls,
+                            "getServicesSize",
+                            "()"
+                            "I");
+
+    // GattService class
+    LOGI("Init service class");
+    jclass classBtgs = jni_find_class(env, "hu/uszeged/bluetooth/BluetoothGattServiceWrapper");
+    g_ctx.service_cls = (*env)->NewGlobalRef(env, classBtgs);
+
+    // GattService getId
+    LOGI("Init service getId");
+    g_ctx.service_get_id =
+        (*env)->GetMethodID(env, g_ctx.service_cls,
+                            "getId",
+                            "()I");
+
+    // GattService getUuid
+    LOGI("Init service getUuid");
+    g_ctx.service_get_uuid =
+        (*env)->GetMethodID(env, g_ctx.service_cls,
+                            "getUuid",
+                            "()Ljava/lang/String;");
+
+    // GattService isPrimary
+    LOGI("Init service isPrimary");
+    g_ctx.service_is_primary =
+        (*env)->GetMethodID(env, g_ctx.service_cls,
+                            "isPrimary",
+                            "()Z");
+
+    // GattService getCharacteristic
+    LOGI("Init service getCharacteristic");
+    g_ctx.service_get_gatt_characteristic =
+        (*env)->GetMethodID(env, g_ctx.service_cls,
+                            "getCharacteristic",
+                            "(I)"
+                            "Lhu/uszeged/bluetooth/BluetoothGattCharacteristicWrapper;");
+
+    // GattService getCharacteristics
+    LOGI("Init service getCharacteristics");
+    g_ctx.service_get_gatt_characteristics =
+        (*env)->GetMethodID(env, g_ctx.service_cls,
+                            "getCharacteristics",
+                            "()Ljava/util/Set;");
+
+    // GattService getCharacteristicsSize
+    LOGI("Init service getCharacteristicsSize");
+    g_ctx.service_get_gatt_characteristics_size =
+        (*env)->GetMethodID(env, g_ctx.service_cls,
+                            "getCharacteristicsSize",
+                            "()"
+                            "I");
+
+    // GattCharacteristic class
+    LOGI("Init characteristic class");
+    jclass classBtc = jni_find_class(env, "hu/uszeged/bluetooth/BluetoothGattCharacteristicWrapper");
+    g_ctx.characteristic_cls = (*env)->NewGlobalRef(env, classBtc);
+
+    // GattCharacteristic getId
+    LOGI("Init characteristic getId");
+    g_ctx.characteristic_get_id =
+        (*env)->GetMethodID(env, g_ctx.characteristic_cls,
+                            "getId",
+                            "()I");
+
+   // GattCharacteristic getUuid
+    LOGI("Init characteristic getUuid");
+    g_ctx.characteristic_get_uuid =
+        (*env)->GetMethodID(env, g_ctx.characteristic_cls,
+                            "getUuid",
+                            "()Ljava/lang/String;");
+
+    // GattCharacteristic getDescriptor
+    LOGI("Init characteristic getDescriptor");
+    g_ctx.characteristic_get_gatt_descriptor =
+        (*env)->GetMethodID(env, g_ctx.characteristic_cls,
+                            "getDescriptor",
+                            "(Ljava/lang/String;)"
+                            "Lhu/uszeged/bluetooth/BluetoothGattDescriptorWrapper;");
+
+    // GattCharacteristic getDescriptors
+    LOGI("Init characteristic getDescriptors");
+    g_ctx.characteristic_get_gatt_descriptors =
+        (*env)->GetMethodID(env, g_ctx.characteristic_cls,
+                            "getDescriptors",
+                            "()Ljava/util/Set;");
+
+    // GattCharacteristic getDescriptorsSize
+    LOGI("Init characteristic getDescriptorsSize");
+    g_ctx.characteristic_get_gatt_descriptors_size =
+        (*env)->GetMethodID(env, g_ctx.characteristic_cls,
+                            "getDescriptorsSize",
+                            "()"
+                            "I");
+
+    // GattDescriptor class
+    LOGI("Init descriptor class");
+    jclass classBtdsc = jni_find_class(env, "hu/uszeged/bluetooth/BluetoothGattDescriptorWrapper");
+    g_ctx.descriptor_cls = (*env)->NewGlobalRef(env, classBtdsc);
+
+    // GattDescriptor getId
+    LOGI("Init descriptor getId");
+    g_ctx.descriptor_get_id =
+        (*env)->GetMethodID(env, g_ctx.descriptor_cls,
+                            "getId",
+                            "()I");
+
+
+    // GattDescriptor getUuid
+    LOGI("Init descriptor getUuid");
+    g_ctx.descriptor_get_uuid =
+        (*env)->GetMethodID(env, g_ctx.descriptor_cls,
+                            "getUuid",
+                            "()Ljava/lang/String;");
+
+
     // Adapter object
     LOGI("Init adapter object");
     jobject objBta = (jobject)
@@ -226,6 +373,24 @@ const char* jni_adapter_get_name(jobject adapter) {
     //(*env)->ReleaseStringUTFChars(env, strName, name);
     (*env)->DeleteLocalRef(env, strName);
     return name;
+}
+
+void jni_adapter_start_discovery(jobject adapter) {
+    LOGI("jni_adapter_start_discovery");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return;
+    }
+    (*env)->CallVoidMethod(env, adapter, g_ctx.adapter_start_le_scan);
+}
+
+void jni_adapter_stop_discovery(jobject adapter) {
+    LOGI("jni_adapter_stop_discovery");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return;
+    }
+    (*env)->CallVoidMethod(env, adapter, g_ctx.adapter_stop_le_scan);
 }
 
 const char** jni_adapter_get_devices(jobject adapter) {
@@ -290,24 +455,6 @@ int jni_adapter_get_devices_size(jobject adapter) {
         return 0;
     }
     return (*env)->CallIntMethod(env, adapter, g_ctx.adapter_get_devices_size);
-}
-
-void jni_adapter_start_discovery(jobject adapter) {
-    LOGI("jni_adapter_start_discovery");
-    JNIEnv *env = jni_get_env();
-    if (env == NULL) {
-        return;
-    }
-    (*env)->CallVoidMethod(env, adapter, g_ctx.adapter_start_le_scan);
-}
-
-void jni_adapter_stop_discovery(jobject adapter) {
-    LOGI("jni_adapter_stop_discovery");
-    JNIEnv *env = jni_get_env();
-    if (env == NULL) {
-        return;
-    }
-    (*env)->CallVoidMethod(env, adapter, g_ctx.adapter_stop_le_scan);
 }
 
 jobject jni_adapter_create_device(jobject adapter, const char* address) {
@@ -383,7 +530,267 @@ int jni_device_is_connected(jobject device) {
     LOGI("jni_device_is_connected");
     JNIEnv *env = jni_get_env();
     if (env == NULL) {
-        return NULL;
+        return 0;
     }
     return (*env)->CallBooleanMethod(env, device, g_ctx.device_is_connected);
+}
+
+jobject jni_device_get_gatt(JNIEnv *env, jobject device) {
+    LOGI("jni_device_get_gatt");
+    if (device == NULL) {
+        LOGI("jni_device_get_gatt no device");
+        return NULL;
+    }
+    return (*env)->CallObjectMethod(env, device, g_ctx.device_get_gatt);
+}
+
+
+const int* jni_device_get_gatt_services(jobject device) {
+    LOGI("jni_device_get_gatt_services");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jobject gatt = jni_device_get_gatt(env, device);
+    jobject set = (jobject)
+        (*env)->CallObjectMethod(env, gatt, g_ctx.gatt_get_gatt_services);
+    // Obtain an iterator over the Set
+    jclass setClass = (*env)->FindClass(env, "java/util/Set");
+    jmethodID iterator =
+            (*env)->GetMethodID(env, setClass, "iterator", "()Ljava/util/Iterator;");
+    jobject iter = (*env)->CallObjectMethod(env, set, iterator);
+    // Get the Set size
+    jmethodID size =
+            (*env)->GetMethodID(env, setClass, "size", "()I");
+    jint setSize = (*env)->CallIntMethod(env, set, size);
+    size_t serviceSize = (size_t) setSize;
+    LOGI("#### %d service(s) found!####", serviceSize);
+    if (serviceSize <= 0) {
+        return NULL;
+    }
+
+    // Get the Iterator method IDs
+    jclass iteratorClass = (*env)->FindClass(env, "java/util/Iterator");
+    jmethodID hasNext = (*env)->GetMethodID(env, iteratorClass, "hasNext", "()Z");
+    jmethodID next =
+        (*env)->GetMethodID(env, iteratorClass, "next", "()Ljava/lang/Object;");
+
+    int *arr = calloc(serviceSize, sizeof *arr);
+    size_t i = 0;
+    // Iterate over the service Set
+    while ((*env)->CallBooleanMethod(env, iter, hasNext)) {
+        LOGI("#### Get Service ####");
+        jobject service = (*env)->CallObjectMethod(env, iter, next);
+        LOGI("#### Get InstanceId ####");
+        jint id = (*env)->CallIntMethod(env, service, g_ctx.service_get_id);
+        LOGI("id: %d", id);
+        arr[i++] = (int) id;
+        (*env)->DeleteLocalRef(env, service);
+    }
+    return arr;
+}
+
+int jni_device_get_gatt_services_size(jobject device) {
+    LOGI("jni_device_get_gatt_services_size");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return 0;
+    }
+    return (*env)->CallIntMethod(env, jni_device_get_gatt(env, device), g_ctx.gatt_get_gatt_services_size);
+}
+
+jobject jni_device_create_service(jobject device, int id) {
+    LOGI("jni_device_create_service");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jobject objBtd = (jobject)
+        (*env)->CallObjectMethod(env, jni_device_get_gatt(env, device),
+                                 g_ctx.gatt_get_gatt_service,
+                                 (jint) id);
+    return (*env)->NewGlobalRef(env, objBtd);
+}
+
+const char* jni_service_get_uuid(jobject service) {
+    LOGI("jni_service_get_uuid");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jstring strUuid = (jstring)
+        (*env)->CallObjectMethod(env, service, g_ctx.service_get_uuid);
+    const char* uuid = (*env)->GetStringUTFChars(env, strUuid, NULL);
+    //(*env)->ReleaseStringUTFChars(env, strUuid, uuid);
+    (*env)->DeleteLocalRef(env, strUuid);
+    return uuid;
+}
+
+int jni_service_is_primary(jobject service) {
+    LOGI("jni_service_is_primary");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return 0;
+    }
+    return (*env)->CallBooleanMethod(env, service, g_ctx.service_is_primary);
+}
+
+const int* jni_service_get_gatt_characteristics(jobject service) {
+    LOGI("jni_service_get_gatt_characteristics");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jobject set = (jobject)
+        (*env)->CallObjectMethod(env, service, g_ctx.service_get_gatt_characteristics);
+    // Obtain an iterator over the Set
+    jclass setClass = (*env)->FindClass(env, "java/util/Set");
+    jmethodID iterator =
+            (*env)->GetMethodID(env, setClass, "iterator", "()Ljava/util/Iterator;");
+    jobject iter = (*env)->CallObjectMethod(env, set, iterator);
+    // Get the Set size
+    jmethodID size =
+            (*env)->GetMethodID(env, setClass, "size", "()I");
+    jint setSize = (*env)->CallIntMethod(env, set, size);
+    size_t characteristicSize = (size_t) setSize;
+    LOGI("#### %d characteristic(s) found!####", characteristicSize);
+    if (characteristicSize <= 0) {
+        return NULL;
+    }
+
+    // Get the Iterator method IDs
+    jclass iteratorClass = (*env)->FindClass(env, "java/util/Iterator");
+    jmethodID hasNext = (*env)->GetMethodID(env, iteratorClass, "hasNext", "()Z");
+    jmethodID next =
+        (*env)->GetMethodID(env, iteratorClass, "next", "()Ljava/lang/Object;");
+
+    int *arr = calloc(characteristicSize, sizeof *arr);
+    size_t i = 0;
+    // Iterate over the characteristic Set
+    while ((*env)->CallBooleanMethod(env, iter, hasNext)) {
+        LOGI("#### Get Characteristic ####");
+        jobject characteristic = (*env)->CallObjectMethod(env, iter, next);
+        LOGI("#### Get InstanceId ####");
+        jint id = (*env)->CallIntMethod(env, characteristic, g_ctx.characteristic_get_id);
+        LOGI("id: %d", id);
+        arr[i++] = (int) id;
+        (*env)->DeleteLocalRef(env, characteristic);
+    }
+    return arr;
+}
+
+int jni_service_get_gatt_characteristics_size(jobject service) {
+    LOGI("jni_service_get_gatt_characteristics_size");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return 0;
+    }
+    return (*env)->CallIntMethod(env, service, g_ctx.service_get_gatt_characteristics_size);
+}
+
+jobject jni_service_create_characteristic(jobject service, int id) {
+    LOGI("jni_service_create_characteristic");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jobject objBtd = (jobject)
+        (*env)->CallObjectMethod(env, service,
+                                 g_ctx.service_get_gatt_characteristic,
+                                 (jint) id);
+    return (*env)->NewGlobalRef(env, objBtd);
+}
+
+const char* jni_characteristic_get_uuid(jobject characteristic) {
+    LOGI("jni_characteristic_get_uuid");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jstring strUuid = (jstring)
+        (*env)->CallObjectMethod(env, characteristic, g_ctx.characteristic_get_uuid);
+    const char* uuid = (*env)->GetStringUTFChars(env, strUuid, NULL);
+    //(*env)->ReleaseStringUTFChars(env, strUuid, uuid);
+    (*env)->DeleteLocalRef(env, strUuid);
+    return uuid;
+}
+
+const int* jni_characteristic_get_gatt_descriptors(jobject characteristic) {
+    LOGI("jni_characteristic_get_gatt_descriptors");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jobject set = (jobject)
+        (*env)->CallObjectMethod(env, characteristic, g_ctx.characteristic_get_gatt_descriptors);
+    // Obtain an iterator over the Set
+    jclass setClass = (*env)->FindClass(env, "java/util/Set");
+    jmethodID iterator =
+            (*env)->GetMethodID(env, setClass, "iterator", "()Ljava/util/Iterator;");
+    jobject iter = (*env)->CallObjectMethod(env, set, iterator);
+    // Get the Set size
+    jmethodID size =
+            (*env)->GetMethodID(env, setClass, "size", "()I");
+    jint setSize = (*env)->CallIntMethod(env, set, size);
+    size_t descriptorSize = (size_t) setSize;
+    LOGI("#### %d descriptor(s) found!####", descriptorSize);
+    if (descriptorSize <= 0) {
+        return NULL;
+    }
+
+    // Get the Iterator method IDs
+    jclass iteratorClass = (*env)->FindClass(env, "java/util/Iterator");
+    jmethodID hasNext = (*env)->GetMethodID(env, iteratorClass, "hasNext", "()Z");
+    jmethodID next =
+        (*env)->GetMethodID(env, iteratorClass, "next", "()Ljava/lang/Object;");
+
+    int *arr = calloc(descriptorSize, sizeof *arr);
+    size_t i = 0;
+    // Iterate over the descriptor Set
+    while ((*env)->CallBooleanMethod(env, iter, hasNext)) {
+        LOGI("#### Get Descriptor ####");
+        jobject descriptor = (*env)->CallObjectMethod(env, iter, next);
+        LOGI("#### Get InstanceId ####");
+        jint id = (*env)->CallIntMethod(env, descriptor, g_ctx.descriptor_get_id);
+        LOGI("id: %d", id);
+        arr[i++] = (int) id;
+        (*env)->DeleteLocalRef(env, descriptor);
+    }
+    return arr;
+}
+
+int jni_characteristic_get_gatt_descriptors_size(jobject characteristic) {
+    LOGI("jni_characteristic_get_gatt_descriptors_size");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return 0;
+    }
+    return (*env)->CallIntMethod(env, characteristic, g_ctx.characteristic_get_gatt_descriptors_size);
+}
+
+jobject jni_characteristic_create_descriptor(jobject characteristic, int id) {
+    LOGI("jni_characteristic_create_descriptor");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jobject objBtd = (jobject)
+        (*env)->CallObjectMethod(env, characteristic,
+                                 g_ctx.characteristic_get_gatt_descriptor,
+                                 (jint) id);
+    return (*env)->NewGlobalRef(env, objBtd);
+}
+
+const char* jni_descriptor_get_uuid(jobject descriptor) {
+    LOGI("jni_descriptor_get_uuid");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jstring strUuid = (jstring)
+        (*env)->CallObjectMethod(env, descriptor, g_ctx.descriptor_get_uuid);
+    const char* uuid = (*env)->GetStringUTFChars(env, strUuid, NULL);
+    //(*env)->ReleaseStringUTFChars(env, strUuid, uuid);
+    (*env)->DeleteLocalRef(env, strUuid);
+    return uuid;
 }

@@ -87,7 +87,7 @@ final class BluetoothDeviceWrapper {
             return mGatt;
         }
         mGatt = BluetoothGattWrapper.create(
-            mDevice.connectGatt(context, /*autoConnect*/ true,
+            mDevice.connectGatt(context, /*autoConnect*/ false,
                 BluetoothGattCallbackWrapper.create(
                     this)/*, BluetoothDevice.TRANSPORT_LE*/), this);
         return mGatt;
@@ -119,7 +119,7 @@ final class BluetoothDeviceWrapper {
         Log.i(TAG, "addService");
         Log.i(TAG, "###################>");
         mServices.put(service.hashCode(),
-            BluetoothGattServiceWrapper.create(service, this));
+            BluetoothGattServiceWrapper.create(service, this, service.hashCode()));
     }
 
     public int getServicesSize() {
@@ -148,7 +148,7 @@ final class BluetoothDeviceWrapper {
         Log.i(TAG, "addCharacteristics");
         Log.i(TAG, "###################>");
         mCharacteristics.put(characteristic.hashCode(),
-            BluetoothGattCharacteristicWrapper.create(characteristic, this));
+            BluetoothGattCharacteristicWrapper.create(characteristic, this, characteristic.hashCode()));
     }
 
     public int getCharacteristicsSize() {
@@ -170,7 +170,7 @@ final class BluetoothDeviceWrapper {
         return mDescriptors.get(uuid);
     }*/
 
-public BluetoothGattDescriptorWrapper getDescriptor(int id) {
+    public BluetoothGattDescriptorWrapper getDescriptor(int id) {
         Log.i(TAG, "###################<");
         Log.i(TAG, "getDescriptor");
         Log.i(TAG, "###################>");
@@ -182,7 +182,7 @@ public BluetoothGattDescriptorWrapper getDescriptor(int id) {
         Log.i(TAG, "addDescriptors");
         Log.i(TAG, "###################>");
         mDescriptors.put(descriptor.hashCode(),
-            BluetoothGattDescriptorWrapper.create(descriptor, this));
+            BluetoothGattDescriptorWrapper.create(descriptor, this, descriptor.hashCode()));
     }
 
     public int getDescriptorsSize() {

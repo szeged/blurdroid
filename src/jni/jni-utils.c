@@ -191,6 +191,13 @@ jobject jni_adapter_create_adapter () {
                             "(Landroid/content/Context;Z)"
                             "Lhu/uszeged/bluetooth/BluetoothGattWrapper;");
 
+    // Device disconnect
+    LOGI("Init device disconnect");
+    g_ctx.device_disconnect =
+        (*env)->GetMethodID(env, g_ctx.device_cls,
+                            "disconnect",
+                            "()V");
+
     // Device getGatt
     LOGI("Init device getGatt");
     g_ctx.device_get_gatt =
@@ -317,6 +324,35 @@ jobject jni_adapter_create_adapter () {
                             "()"
                             "I");
 
+    // GattCharacteristic getValue
+    LOGI("Init characteristic getValue");
+    g_ctx.characteristic_get_value =
+        (*env)->GetMethodID(env, g_ctx.characteristic_cls,
+                            "getValue",
+                            "()[I");
+
+    // GattCharacteristic getValueSize
+    LOGI("Init characteristic getValueSize");
+    g_ctx.characteristic_get_value_size =
+        (*env)->GetMethodID(env, g_ctx.characteristic_cls,
+                            "getValueSize",
+                            "()"
+                            "I");
+
+    // GattCharacteristic readValue
+    LOGI("Init characteristic readValue");
+    g_ctx.characteristic_read_value =
+        (*env)->GetMethodID(env, g_ctx.characteristic_cls,
+                            "readValue",
+                            "()[I");
+
+    // GattCharacteristic writeValue
+    LOGI("Init characteristic writeValue");
+    g_ctx.characteristic_write_value =
+        (*env)->GetMethodID(env, g_ctx.characteristic_cls,
+                            "writeValue",
+                            "([I)V");
+
     // GattDescriptor class
     LOGI("Init descriptor class");
     jclass classBtdsc = jni_find_class(env, "hu/uszeged/bluetooth/BluetoothGattDescriptorWrapper");
@@ -337,6 +373,34 @@ jobject jni_adapter_create_adapter () {
                             "getUuid",
                             "()Ljava/lang/String;");
 
+    // GattDescriptor getValue
+    LOGI("Init descriptor getValue");
+    g_ctx.descriptor_get_value =
+        (*env)->GetMethodID(env, g_ctx.descriptor_cls,
+                            "getValue",
+                            "()[I");
+
+    // GattDescriptor getValueSize
+    LOGI("Init descriptor getValueSize");
+    g_ctx.descriptor_get_value_size =
+        (*env)->GetMethodID(env, g_ctx.descriptor_cls,
+                            "getValueSize",
+                            "()"
+                            "I");
+
+    // GattDescriptor readValue
+    LOGI("Init descriptor readValue");
+    g_ctx.descriptor_read_value =
+        (*env)->GetMethodID(env, g_ctx.descriptor_cls,
+                            "readValue",
+                            "()[I");
+
+    // GattDescriptor writeValue
+    LOGI("Init descriptor writeValue");
+    g_ctx.descriptor_write_value =
+        (*env)->GetMethodID(env, g_ctx.descriptor_cls,
+                            "writeValue",
+                            "([I)V");
 
     // Adapter object
     LOGI("Init adapter object");
@@ -524,6 +588,15 @@ void jni_device_connect_gatt(jobject device) {
                              context,
                              JNI_FALSE);
     LOGI("BluetoothDevice_connectGatt done");
+}
+
+void jni_device_disconnect(jobject device) {
+    LOGI("jni_device_disconnect");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return 0;
+    }
+    (*env)->CallVoidMethod(env, device, g_ctx.device_disconnect);
 }
 
 int jni_device_is_connected(jobject device) {
@@ -768,6 +841,82 @@ int jni_characteristic_get_gatt_descriptors_size(jobject characteristic) {
     return (*env)->CallIntMethod(env, characteristic, g_ctx.characteristic_get_gatt_descriptors_size);
 }
 
+const int* jni_characteristic_get_value(jobject characteristic) {
+    LOGI("jni_characteristic_get_value");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jintArray jarr = (jintArray) (*env)->CallObjectMethod(env, characteristic, g_ctx.characteristic_get_value);
+    if (jarr == NULL) {
+        return NULL;
+    }
+    jsize len = (*env)->GetArrayLength(env, jarr);
+    if (len <= 0) {
+        return 0;
+    }
+    int *rarr = calloc((size_t)len, sizeof *rarr);
+
+    jboolean iscopy;
+    jint* values = (*env)->GetIntArrayElements(env, jarr, &iscopy);
+    int i;
+    for (i = 0; i < len ; i++) {
+        rarr[i] = (int)values[i];
+    }
+    if (iscopy == JNI_TRUE) {
+        (*env)->ReleaseIntArrayElements(env, jarr, values, JNI_ABORT);
+    }
+    return rarr;
+}
+
+const int jni_characteristic_get_value_size(jobject characteristic) {
+    LOGI("jni_characteristic_get_value_size");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return 0;
+    }
+    return (*env)->CallIntMethod(env, characteristic, g_ctx.characteristic_get_value_size);
+}
+
+const int* jni_characteristic_read_value(jobject characteristic) {
+    LOGI("jni_characteristic_read_value");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jintArray jarr = (jintArray) (*env)->CallObjectMethod(env, characteristic, g_ctx.characteristic_read_value);
+    if (jarr == NULL) {
+        return NULL;
+    }
+    jsize len = (*env)->GetArrayLength(env, jarr);
+    if (len <= 0) {
+        return NULL;
+    }
+    int *rarr = calloc((size_t)len, sizeof *rarr);
+
+    jboolean iscopy;
+    jint* values = (*env)->GetIntArrayElements(env, jarr, &iscopy);
+    int i;
+    for (i = 0; i < len ; i++) {
+        rarr[i] = (int)values[i];
+    }
+    if (iscopy == JNI_TRUE) {
+        (*env)->ReleaseIntArrayElements(env, jarr, values, JNI_ABORT);
+    }
+    return rarr;
+}
+
+void jni_characteristic_write_value(jobject characteristic, const int* values, int length) {
+    LOGI("jni_characteristic_write_value");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return;
+    }
+    jintArray arr = (*env)->NewIntArray(env, length);
+    (*env)->SetIntArrayRegion(env, arr, 0, length, values);
+    (*env)->CallObjectMethod(env, characteristic, g_ctx.characteristic_write_value, arr);
+}
+
 jobject jni_characteristic_create_descriptor(jobject characteristic, int id) {
     LOGI("jni_characteristic_create_descriptor");
     JNIEnv *env = jni_get_env();
@@ -793,4 +942,80 @@ const char* jni_descriptor_get_uuid(jobject descriptor) {
     //(*env)->ReleaseStringUTFChars(env, strUuid, uuid);
     (*env)->DeleteLocalRef(env, strUuid);
     return uuid;
+}
+
+const int* jni_descriptor_get_value(jobject descriptor) {
+    LOGI("jni_descriptor_get_value");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jintArray jarr = (jintArray) (*env)->CallObjectMethod(env, descriptor, g_ctx.descriptor_get_value);
+    if (jarr == NULL) {
+        return NULL;
+    }
+    jsize len = (*env)->GetArrayLength(env, jarr);
+    if (len <= 0) {
+        return 0;
+    }
+    int *rarr = calloc((size_t)len, sizeof *rarr);
+
+    jboolean iscopy;
+    jint* values = (*env)->GetIntArrayElements(env, jarr, &iscopy);
+    int i;
+    for (i = 0; i < len ; i++) {
+        rarr[i] = (int)values[i];
+    }
+    if (iscopy == JNI_TRUE) {
+        (*env)->ReleaseIntArrayElements(env, jarr, values, JNI_ABORT);
+    }
+    return rarr;
+}
+
+const int jni_descriptor_get_value_size(jobject descriptor) {
+    LOGI("jni_descriptor_get_value_size");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return 0;
+    }
+    return (*env)->CallIntMethod(env, descriptor, g_ctx.descriptor_get_value_size);
+}
+
+const int* jni_descriptor_read_value(jobject descriptor) {
+    LOGI("jni_descriptor_read_value");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return NULL;
+    }
+    jintArray jarr = (jintArray) (*env)->CallObjectMethod(env, descriptor, g_ctx.descriptor_read_value);
+    if (jarr == NULL) {
+        return NULL;
+    }
+    jsize len = (*env)->GetArrayLength(env, jarr);
+    if (len <= 0) {
+        return 0;
+    }
+    int *rarr = calloc((size_t)len, sizeof *rarr);
+
+    jboolean iscopy;
+    jint* values = (*env)->GetIntArrayElements(env, jarr, &iscopy);
+    int i;
+    for (i = 0; i < len ; i++) {
+        rarr[i] = (int)values[i];
+    }
+    if (iscopy == JNI_TRUE) {
+        (*env)->ReleaseIntArrayElements(env, jarr, values, JNI_ABORT);
+    }
+    return rarr;
+}
+
+void jni_descriptor_write_value(jobject descriptor, const int* values, int length) {
+    LOGI("jni_descriptor_write_value");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return;
+    }
+    jintArray arr = (*env)->NewIntArray(env, length);
+    (*env)->SetIntArrayRegion(env, arr, 0, length, values);
+    (*env)->CallObjectMethod(env, descriptor, g_ctx.descriptor_write_value, arr);
 }

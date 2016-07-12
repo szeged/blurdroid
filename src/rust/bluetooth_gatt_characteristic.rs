@@ -1,6 +1,7 @@
 use ffi;
 use std::cell::Cell;
 use std::error::Error;
+use std::os::raw::{c_int};
 use std::ptr;
 use utils;
 use time;
@@ -72,6 +73,52 @@ impl Characteristic {
             ffi::bluetooth_characteristic_free_int_array(descriptors);
         }
         Ok(v)
+    }
+
+    pub fn get_value(&self) -> Result<Vec<u8>, Box<Error>> {
+        println!("{} Characteristic get_value {:?}", time::precise_time_ns(), self.characteristic());
+        let mut v = vec!();
+        unsafe {
+            let values = ffi::bluetooth_characteristic_get_value(self.characteristic());
+            println!("#### values PTR {:?} ####", values);
+            let max = ffi::bluetooth_characteristic_get_value_size(self.characteristic()) as isize;
+            println!("#### values LENGTH {:?} ####", max);
+            for i in 0..max {
+                let val_ptr = *values.offset(i);
+                let val = (val_ptr as i32) as u8;
+                println!("#### values #{}: {:?} ####", i, val);
+                v.push(val);
+            }
+            ffi::bluetooth_characteristic_free_int_array(values);
+        }
+        Ok(v)
+    }
+
+    pub fn read_value(&self) -> Result<Vec<u8>, Box<Error>> {
+        println!("{} Characteristic read_value {:?}", time::precise_time_ns(), self.characteristic());
+        let mut v = vec!();
+        unsafe {
+            let values = ffi::bluetooth_characteristic_read_value(self.characteristic());
+            println!("#### values PTR {:?} ####", values);
+            let max = ffi::bluetooth_characteristic_get_value_size(self.characteristic()) as isize;
+            println!("#### values LENGTH {:?} ####", max);
+            for i in 0..max {
+                let val_ptr = *values.offset(i);
+                let val = (val_ptr as i32) as u8;
+                println!("#### values #{}: {:?} ####", i, val);
+                v.push(val);
+            }
+            ffi::bluetooth_characteristic_free_int_array(values);
+        }
+        Ok(v)
+    }
+
+    pub fn write_value(&self, values: Vec<u8>) -> Result<(), Box<Error>> {
+        println!("{} Characteristic write_value values: {:?} {:?}", time::precise_time_ns(), values, self.characteristic());
+        unsafe  {
+            ffi::bluetooth_characteristic_write_value(self.characteristic(), values.as_ptr() as *const c_int, values.len() as c_int)
+        }
+        Ok(())
     }
 }
 

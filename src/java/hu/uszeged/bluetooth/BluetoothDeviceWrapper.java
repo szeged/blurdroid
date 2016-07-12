@@ -93,6 +93,10 @@ final class BluetoothDeviceWrapper {
         return mGatt;
     }
 
+    public void disconnect() {
+        mGatt.disconnect();
+    }
+
     public BluetoothGattWrapper getGatt() {
         Log.i(TAG, "###################<");
         Log.i(TAG, "getGatt");

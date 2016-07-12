@@ -51,14 +51,9 @@ typedef struct {
     jmethodID device_get_address;
     jmethodID device_get_name;
     jmethodID device_connect_gatt;
+    jmethodID device_disconnect;
     jmethodID device_is_connected;
     jmethodID device_get_gatt;
-    //jmethodID device_get_gatt_service;
-    //jmethodID device_get_gatt_characteristic;
-    //jmethodID device_get_gatt_descriptor;
-    //jmethodID device_get_gatt_services_size;
-    //jmethodID device_get_gatt_characteristics_size;
-    //jmethodID device_get_gatt_descriptors_size;
     // gatt
     jclass gatt_cls;
     //jmethodID gatt_connect;
@@ -67,10 +62,6 @@ typedef struct {
     jmethodID gatt_get_gatt_services;
     jmethodID gatt_get_gatt_service;
     jmethodID gatt_get_gatt_services_size;
-    //jmethodID gatt_read_characteristic;
-    //jmethodID gatt_read_descriptor;
-    //jmethodID gatt_write_characteristic;
-    //jmethodID gatt_write_descriptor;
     // gatt service
     jclass service_cls;
     jmethodID service_get_id;
@@ -90,14 +81,18 @@ typedef struct {
     jmethodID characteristic_get_gatt_descriptors;
     jmethodID characteristic_get_gatt_descriptor;
     jmethodID characteristic_get_gatt_descriptors_size;
-    //jmethodID characteristic_get_value;
-    //jmethodID characteristic_set_value;
+    jmethodID characteristic_get_value;
+    jmethodID characteristic_get_value_size;
+    jmethodID characteristic_read_value;
+    jmethodID characteristic_write_value;
     // gatt descriptor
     jclass descriptor_cls;
     jmethodID descriptor_get_id;
     jmethodID descriptor_get_uuid;
-    //jmethodID descriptor_get_value;
-    //jmethodID descriptor_set_value;
+    jmethodID descriptor_get_value;
+    jmethodID descriptor_get_value_size;
+    jmethodID descriptor_read_value;
+    jmethodID descriptor_write_value;
 } BTContext;
 
 BTContext g_ctx;
@@ -116,6 +111,7 @@ jobject jni_adapter_create_device (jobject, const char*);
 const char* jni_device_get_address (jobject);
 const char* jni_device_get_name (jobject);
 void jni_device_connect_gatt (jobject);
+void jni_device_disconnect (jobject);
 int jni_device_is_connected (jobject);
 const int* jni_device_get_gatt_services (jobject);
 int jni_device_get_gatt_services_size (jobject);
@@ -133,9 +129,17 @@ const char* jni_characteristic_get_uuid(jobject);
 int jni_characteristic_is_primary(jobject);
 const int* jni_characteristic_get_gatt_descriptors (jobject);
 int jni_characteristic_get_gatt_descriptors_size (jobject);
+const int* jni_characteristic_get_value(jobject);
+const int jni_characteristic_get_value_size(jobject);
+const int* jni_characteristic_read_value(jobject);
+void jni_characteristic_write_value(jobject, const int*, int);
 
 // descriptor
 jobject jni_characteristic_create_descriptor(jobject, int);
 const char* jni_descriptor_get_uuid(jobject);
+const int* jni_descriptor_get_value(jobject);
+const int jni_descriptor_get_value_size(jobject);
+const int* jni_descriptor_read_value(jobject);
+void jni_descriptor_write_value(jobject, const int*, int);
 
 #endif /* JNI_UTILS_H */

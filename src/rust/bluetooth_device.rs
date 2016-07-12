@@ -76,6 +76,13 @@ impl Device {
         }
     }
 
+    pub fn disconnect(&self) -> Result<(), Box<Error>> {
+        println!("{} Device disconnect {:?}", time::precise_time_ns(), self.device());
+        unsafe {
+            Ok(ffi::bluetooth_device_disconnect(self.device()))
+        }
+    }
+
     pub fn is_connected(&mut self) -> Result<bool, Box<Error>> {
         println!("{} Device is_connected {:?}", time::precise_time_ns(), self.device());
         unsafe {

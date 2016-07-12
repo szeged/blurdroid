@@ -49,17 +49,54 @@ final class BluetoothGattDescriptorWrapper {
         return mDescriptor.getUuid().toString();
     }
 
-    public byte[] getValue() {
+    public int[] getValue() {
         Log.i(TAG, "###################<");
-        Log.i(TAG, "getValue "+mDescriptor.getValue());
+        Log.i(TAG, "getValue byte: "+mDescriptor.getValue());
+        byte[] values = mDescriptor.getValue();
+        if (values == null) {
+            return null;
+        }
+        int[] intArray = new int[values.length];
+        for(int i = 0, k = 0; i < values.length; i++) {
+            intArray[i] = values[i] & (0xff);
+        }
+        Log.i(TAG, "getValue int: "+intArray);
         Log.i(TAG, "###################>");
-        return mDescriptor.getValue();
+        return intArray;
     }
 
-    public boolean setValue(byte[] value) {
+    public int getValueSize() {
+        int[] values = getValue();
+        return (values == null) ? 0 : values.length;
+    }
+
+    public boolean setValue(int[] values) {
+        // The values type is int,
+        // but only containt u8 values from rust
         Log.i(TAG, "###################<");
-        Log.i(TAG, "setValue "+value);
+        Log.i(TAG, "setValue int: "+values);
+        byte[] byteArray = new byte[values.length];
+        for(int i = 0, k = 0; i < values.length; i++) {
+            byteArray[i] = (byte) values[i];
+        }
+        Log.i(TAG, "setValue byte: "+byteArray);
         Log.i(TAG, "###################>");
-        return mDescriptor.setValue(value);
+        return mDescriptor.setValue(byteArray);
+    }
+
+    public int[] readValue() {
+        Log.i(TAG, "###################<");
+        Log.i(TAG, "readValue ");
+        Log.i(TAG, "###################>");
+        mDevice.getGatt().readDescriptor(this);
+        return getValue();
+    }
+
+    public void writeValue(int[] values) {
+        Log.i(TAG, "###################<");
+        Log.i(TAG, "writeValue "+values);
+        Log.i(TAG, "###################>");
+        setValue(values);
+        mDevice.getGatt().writeDescriptor(this);
     }
 }

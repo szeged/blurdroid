@@ -1,6 +1,7 @@
 use ffi;
 use std::cell::Cell;
 use std::error::Error;
+use std::os::raw::{c_int};
 use std::ptr;
 use utils;
 use time;
@@ -53,6 +54,52 @@ impl Descriptor {
         println!("{} Descriptor get_uuid {:?} {:?}", time::precise_time_ns(), uuid, res);
         unsafe { ffi::bluetooth_descriptor_free_string(uuid) };
         res
+    }
+
+    pub fn get_value(&self) -> Result<Vec<u8>, Box<Error>> {
+        println!("{} Descriptor get_value {:?}", time::precise_time_ns(), self.descriptor());
+        let mut v = vec!();
+        unsafe {
+            let values = ffi::bluetooth_descriptor_get_value(self.descriptor());
+            println!("#### values PTR {:?} ####", values);
+            let max = ffi::bluetooth_descriptor_get_value_size(self.descriptor()) as isize;
+            println!("#### values LENGTH {:?} ####", max);
+            for i in 0..max {
+                let val_ptr = *values.offset(i);
+                let val = (val_ptr as i32) as u8;
+                println!("#### values #{}: {:?} ####", i, val);
+                v.push(val);
+            }
+            ffi::bluetooth_descriptor_free_int_array(values);
+        }
+        Ok(v)
+    }
+
+    pub fn read_value(&self) -> Result<Vec<u8>, Box<Error>> {
+        println!("{} Descriptor read_value {:?}", time::precise_time_ns(), self.descriptor());
+        let mut v = vec!();
+        unsafe {
+            let values = ffi::bluetooth_descriptor_read_value(self.descriptor());
+            println!("#### values PTR {:?} ####", values);
+            let max = ffi::bluetooth_descriptor_get_value_size(self.descriptor()) as isize;
+            println!("#### values LENGTH {:?} ####", max);
+            for i in 0..max {
+                let val_ptr = *values.offset(i);
+                let val = (val_ptr as i32) as u8;
+                println!("#### values #{}: {:?} ####", i, val);
+                v.push(val);
+            }
+            ffi::bluetooth_descriptor_free_int_array(values);
+        }
+        Ok(v)
+    }
+
+    pub fn write_value(&self, values: Vec<u8>) -> Result<(), Box<Error>> {
+        println!("{} Descriptor write_value values: {:?} {:?}", time::precise_time_ns(), values, self.descriptor());
+        unsafe  {
+            ffi::bluetooth_descriptor_write_value(self.descriptor(), values.as_ptr() as *const c_int, values.len() as c_int)
+        }
+        Ok(())
     }
 }
 

@@ -43,6 +43,39 @@ bluetooth_characteristic_get_gatt_descriptors_size (BluetoothCharacteristic *cha
     return jni_characteristic_get_gatt_descriptors_size (characteristic->characteristic);
 }
 
+const int*
+bluetooth_characteristic_get_value (BluetoothCharacteristic *characteristic)
+{
+    LOGI("bluetooth_characteristic_get_value\n");
+    LOGI("c->c: %p\n", characteristic->characteristic);
+    return jni_characteristic_get_value (characteristic->characteristic);
+}
+
+const int
+bluetooth_characteristic_get_value_size (BluetoothCharacteristic *characteristic)
+{
+    LOGI("bluetooth_characteristic_get_value_size\n");
+    LOGI("c->c: %p\n", characteristic->characteristic);
+    return jni_characteristic_get_value_size (characteristic->characteristic);
+}
+
+const int*
+bluetooth_characteristic_read_value (BluetoothCharacteristic *characteristic)
+{
+    LOGI("bluetooth_characteristic_read_value\n");
+    LOGI("c->c: %p\n", characteristic->characteristic);
+    return jni_characteristic_read_value (characteristic->characteristic);
+}
+
+// TODO bool
+void
+bluetooth_characteristic_write_value (BluetoothCharacteristic *characteristic, const int* values, int length)
+{
+    LOGI("bluetooth_characteristic_write_value\n");
+    LOGI("c->c: %p\n", characteristic->characteristic);
+    jni_characteristic_write_value (characteristic->characteristic, values, length);
+}
+
 void
 bluetooth_characteristic_free_characteristic (BluetoothCharacteristic *characteristic) {
     LOGI("bluetooth_characteristic_free_characteristic\n");

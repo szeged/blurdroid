@@ -35,7 +35,7 @@ final class BluetoothGattCharacteristicWrapper {
 
     public BluetoothGattCharacteristic get() {
         Log.i(TAG, "###################<");
-        Log.i(TAG, "writeDescriptor");
+        Log.i(TAG, "get");
         Log.i(TAG, "###################>");
         return mCharacteristic;
     }
@@ -100,17 +100,54 @@ final class BluetoothGattCharacteristicWrapper {
         return mDevice.getDescriptorsSize();
     }
 
-    public byte[] getValue() {
+    public int[] getValue() {
         Log.i(TAG, "###################<");
-        Log.i(TAG, "getValue "+mCharacteristic.getValue());
+        Log.i(TAG, "getValue byte: "+mCharacteristic.getValue());
+        byte[] values = mCharacteristic.getValue();
+        if (values == null) {
+            return null;
+        }
+        int[] intArray = new int[values.length];
+        for(int i = 0, k = 0; i < values.length; i++) {
+            intArray[i] = values[i] & (0xff);
+        }
+        Log.i(TAG, "getValue int: "+intArray);
         Log.i(TAG, "###################>");
-        return mCharacteristic.getValue();
+        return intArray;
     }
 
-    public boolean setValue(byte[] value) {
+    public int getValueSize() {
+        int[] values = getValue();
+        return (values == null) ? 0 : values.length;
+    }
+
+    public boolean setValue(int[] values) {
+        // The values type is int,
+        // but only containt u8 values from rust
         Log.i(TAG, "###################<");
-        Log.i(TAG, "setValue "+value);
+        Log.i(TAG, "setValue int: "+values);
+        byte[] byteArray = new byte[values.length];
+        for(int i = 0, k = 0; i < values.length; i++) {
+            byteArray[i] = (byte) values[i];
+        }
+        Log.i(TAG, "setValue byte: "+byteArray);
         Log.i(TAG, "###################>");
-        return mCharacteristic.setValue(value);
+        return mCharacteristic.setValue(byteArray);
+    }
+
+    public int[] readValue() {
+        Log.i(TAG, "###################<");
+        Log.i(TAG, "readValue ");
+        Log.i(TAG, "###################>");
+        mDevice.getGatt().readCharacteristic(this);
+        return getValue();
+    }
+
+    public void writeValue(int[] values) {
+        Log.i(TAG, "###################<");
+        Log.i(TAG, "writeValue "+values);
+        Log.i(TAG, "###################>");
+        setValue(values);
+        mDevice.getGatt().writeCharacteristic(this);
     }
 }

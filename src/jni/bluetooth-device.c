@@ -43,6 +43,14 @@ bluetooth_device_connect_gatt (BluetoothDevice *device)
     jni_device_connect_gatt (device->device);
 }
 
+void
+bluetooth_device_disconnect (BluetoothDevice *device)
+{
+    LOGI("bluetooth_device_disconnect\n");
+    LOGI("d->d: %p\n", device->device);
+    jni_device_disconnect (device->device);
+}
+
 int
 bluetooth_device_is_connected (BluetoothDevice *device)
 {

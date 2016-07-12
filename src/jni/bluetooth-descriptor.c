@@ -27,6 +27,39 @@ bluetooth_descriptor_get_uuid (BluetoothDescriptor *descriptor)
     return jni_descriptor_get_uuid (descriptor->descriptor);
 }
 
+const int*
+bluetooth_descriptor_get_value (BluetoothDescriptor *descriptor)
+{
+    LOGI("bluetooth_descriptor_get_value\n");
+    LOGI("d->d: %p\n", descriptor->descriptor);
+    return jni_descriptor_get_value (descriptor->descriptor);
+}
+
+const int
+bluetooth_descriptor_get_value_size (BluetoothDescriptor *descriptor)
+{
+    LOGI("bluetooth_descriptor_get_value_size\n");
+    LOGI("d->d: %p\n", descriptor->descriptor);
+    return jni_descriptor_get_value_size (descriptor->descriptor);
+}
+
+const int*
+bluetooth_descriptor_read_value (BluetoothDescriptor *descriptor)
+{
+    LOGI("bluetooth_descriptor_read_value\n");
+    LOGI("d->d: %p\n", descriptor->descriptor);
+    return jni_descriptor_read_value (descriptor->descriptor);
+}
+
+// TODO bool
+void
+bluetooth_descriptor_write_value (BluetoothDescriptor *descriptor, const int* values, int length)
+{
+    LOGI("bluetooth_descriptor_write_value\n");
+    LOGI("d->d: %p\n", descriptor->descriptor);
+    return jni_descriptor_write_value (descriptor->descriptor, values, length);
+}
+
 void
 bluetooth_descriptor_free_descriptor (BluetoothDescriptor *descriptor) {
     LOGI("bluetooth_descriptor_free_descriptor\n");
@@ -40,3 +73,9 @@ bluetooth_descriptor_free_string(const char* string) {
     jni_free ((char*)string);
 }
 
+void
+bluetooth_descriptor_free_int_array (int* array)
+{
+    LOGI("bluetooth_descriptor_free_int_array\n");
+    jni_free (array);
+}

@@ -19,8 +19,13 @@ struct BluetoothDescriptor
 BluetoothDescriptor* bluetooth_descriptor_create_descriptor (BluetoothCharacteristic*, int);
 
 const char* bluetooth_descriptor_get_uuid (BluetoothDescriptor*);
+const int* bluetooth_descriptor_get_value(BluetoothDescriptor*);
+const int bluetooth_descriptor_get_value_size(BluetoothDescriptor*);
+const int* bluetooth_descriptor_read_value(BluetoothDescriptor*);
+void bluetooth_descriptor_write_value(BluetoothDescriptor*, const int*, int);
 void bluetooth_descriptor_free_descriptor (BluetoothDescriptor*);
 void bluetooth_descriptor_free_string (const char*);
+void bluetooth_descriptor_free_int_array (int*);
 
 #ifdef __cplusplus
 }; /* extern "C" */

@@ -1,4 +1,4 @@
-use std::os::raw::{c_char, /*c_uchar,*/ c_int, c_void};
+use std::os::raw::{c_char, c_int, c_void};
 //use libc::{c_void, c_char, c_uint, c_int};
 
 pub type BluetoothAdapter = c_void;
@@ -24,6 +24,7 @@ extern {
     //pub fn bluetooth_device_get_address(device: *mut BluetoothDevice) -> *const c_char;
     pub fn bluetooth_device_get_name(device: *mut BluetoothDevice) -> *const c_char;
     pub fn bluetooth_device_connect_gatt(device: *mut BluetoothDevice);
+    pub fn bluetooth_device_disconnect(device: *mut BluetoothDevice);
     pub fn bluetooth_device_is_connected(device: *mut BluetoothDevice) -> c_int;
     pub fn bluetooth_device_get_gatt_services(device: *mut BluetoothDevice) -> *const c_int;
     pub fn bluetooth_device_get_gatt_services_size(device: *mut BluetoothDevice) -> c_int;
@@ -44,12 +45,21 @@ extern {
     pub fn bluetooth_characteristic_get_uuid(characteristic: *mut BluetoothCharacteristic) -> *const c_char;
     pub fn bluetooth_characteristic_get_gatt_descriptors(characteristic: *mut BluetoothCharacteristic) -> *const c_int;
     pub fn bluetooth_characteristic_get_gatt_descriptors_size(characteristic: *mut BluetoothCharacteristic) -> c_int;
+    pub fn bluetooth_characteristic_get_value(characteristic: *mut BluetoothCharacteristic) -> *const c_int;
+    pub fn bluetooth_characteristic_get_value_size(characteristic: *mut BluetoothCharacteristic) -> c_int;
+    pub fn bluetooth_characteristic_read_value(characteristic: *mut BluetoothCharacteristic) -> *const c_int;
+    pub fn bluetooth_characteristic_write_value(characteristic: *mut BluetoothCharacteristic, array: *const c_int, length: c_int);
     pub fn bluetooth_characteristic_free_characteristic(characteristic: *mut BluetoothCharacteristic);
     pub fn bluetooth_characteristic_free_string(string: *const c_char);
     pub fn bluetooth_characteristic_free_int_array(array: *const c_int);
 
     pub fn bluetooth_descriptor_create_descriptor(characteristic: *mut BluetoothCharacteristic, id: c_int) -> *mut BluetoothDescriptor;
     pub fn bluetooth_descriptor_get_uuid(descriptor: *mut BluetoothDescriptor) -> *const c_char;
+    pub fn bluetooth_descriptor_get_value(descriptor: *mut BluetoothDescriptor) -> *const c_int;
+    pub fn bluetooth_descriptor_get_value_size(descriptor: *mut BluetoothDescriptor) -> c_int;
+    pub fn bluetooth_descriptor_read_value(descriptor: *mut BluetoothDescriptor) -> *const c_int;
+    pub fn bluetooth_descriptor_write_value(descriptor: *mut BluetoothDescriptor, array: *const c_int, length: c_int);
     pub fn bluetooth_descriptor_free_descriptor(descriptor: *mut BluetoothDescriptor);
     pub fn bluetooth_descriptor_free_string(string: *const c_char);
+    pub fn bluetooth_descriptor_free_int_array(array: *const c_int);
 }

@@ -13,7 +13,7 @@ struct ICharacteristic {
     characteristic: Cell<*mut ffi::BluetoothCharacteristic>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Characteristic {
     i: Box<ICharacteristic>,
     id: i32,
@@ -122,11 +122,23 @@ impl Characteristic {
     }
 }
 
+impl Clone for Characteristic {
+    fn clone(&self) -> Characteristic {
+        println!("{} Clone Characteristic {:?}", time::precise_time_ns(), self.characteristic());
+        unsafe { ffi::bluetooth_characteristic_inc_refcount(self.characteristic()) };
+        Characteristic {
+            i: self.i.clone(),
+            id: self.id,
+        }
+    }
+}
+
 impl Drop for Characteristic {
     fn drop(&mut self) {
         println!("{} Drop Characteristic {:?}", time::precise_time_ns(), self.characteristic());
-        /*unsafe {
+        unsafe {
+            ffi::bluetooth_characteristic_dec_refcount(self.characteristic());
             ffi::bluetooth_characteristic_free_characteristic(self.characteristic());
-        }*/
+        }
     }
 }

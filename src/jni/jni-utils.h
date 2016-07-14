@@ -3,7 +3,7 @@
 #include <jni.h>
 #include <android/log.h>
 
-static const char* kTAG = "### blurdroid ###";
+static const char* kTAG = "blurdroid";
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
 #define LOGW(...) \

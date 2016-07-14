@@ -13,7 +13,7 @@ struct IDescriptor {
     descriptor: Cell<*mut ffi::BluetoothDescriptor>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Descriptor {
     i: Box<IDescriptor>,
     id: i32,
@@ -103,11 +103,23 @@ impl Descriptor {
     }
 }
 
+impl Clone for Descriptor {
+    fn clone(&self) -> Descriptor {
+        println!("{} Clone Descriptor {:?}", time::precise_time_ns(), self.descriptor());
+        unsafe { ffi::bluetooth_descriptor_inc_refcount(self.descriptor()) };
+        Descriptor {
+            i: self.i.clone(),
+            id: self.id,
+        }
+    }
+}
+
 impl Drop for Descriptor {
     fn drop(&mut self) {
         println!("{} Drop Descriptor {:?}", time::precise_time_ns(), self.descriptor());
-        /*unsafe {
+        unsafe {
+            ffi::bluetooth_descriptor_dec_refcount(self.descriptor());
             ffi::bluetooth_descriptor_free_descriptor(self.descriptor());
-        }*/
+        }
     }
 }

@@ -594,7 +594,7 @@ void jni_device_disconnect(jobject device) {
     LOGI("jni_device_disconnect");
     JNIEnv *env = jni_get_env();
     if (env == NULL) {
-        return 0;
+        return;
     }
     (*env)->CallVoidMethod(env, device, g_ctx.device_disconnect);
 }

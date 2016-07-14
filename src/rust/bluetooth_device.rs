@@ -13,7 +13,7 @@ struct IDevice {
     device: Cell<*mut ffi::BluetoothDevice>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Device {
     i: Box<IDevice>,
     address: String,
@@ -115,11 +115,23 @@ impl Device {
     }
 }
 
+impl Clone for Device {
+    fn clone(&self) -> Device {
+        println!("{} Clone Device {:?}", time::precise_time_ns(), self.device());
+        unsafe { ffi::bluetooth_device_inc_refcount(self.device()) };
+        Device {
+            i: self.i.clone(),
+            address: self.address.clone(),
+        }
+    }
+}
+
 impl Drop for Device {
     fn drop(&mut self) {
         println!("{} Drop Device {:?}", time::precise_time_ns(), self.device());
-        /*unsafe {
-            ffi::bluetooth_adapter_free_adapter(self.adapter());
-        }*/
+        unsafe {
+            ffi::bluetooth_device_dec_refcount(self.device());
+            ffi::bluetooth_device_free_device(self.device());
+        }
     }
 }

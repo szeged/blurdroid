@@ -11,7 +11,7 @@ struct IAdapter {
     adapter: Cell<*mut ffi::BluetoothAdapter>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Adapter {
     i: Box<IAdapter>,
     //devices: Option<HashMap<Device>>,
@@ -91,11 +91,22 @@ impl Adapter {
     }
 }
 
+impl Clone for Adapter {
+    fn clone(&self) -> Adapter {
+        println!("{} Clone Adapter {:?}", time::precise_time_ns(), self.adapter());
+        unsafe { ffi::bluetooth_adapter_inc_refcount(self.adapter()) };
+        Adapter {
+            i: self.i.clone(),
+        }
+    }
+}
+
 impl Drop for Adapter {
     fn drop(&mut self) {
         println!("{} Drop Adapter {:?}", time::precise_time_ns(), self.adapter());
-        /*unsafe {
+        unsafe {
+            ffi::bluetooth_adapter_dec_refcount(self.adapter());
             ffi::bluetooth_adapter_free_adapter(self.adapter());
-        }*/
+        }
     }
 }

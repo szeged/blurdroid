@@ -12,7 +12,7 @@ struct IService {
     service: Cell<*mut ffi::BluetoothService>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Service {
     i: Box<IService>,
     id: i32,
@@ -82,11 +82,24 @@ impl Service {
     }
 }
 
+impl Clone for Service {
+    fn clone(&self) -> Service {
+        println!("{} Clone Service {:?}", time::precise_time_ns(), self.service());
+        unsafe { ffi::bluetooth_service_inc_refcount(self.service()) };
+        Service {
+            i: self.i.clone(),
+            id: self.id,
+        }
+    }
+}
+
+
 impl Drop for Service {
     fn drop(&mut self) {
         println!("{} Drop Service {:?}", time::precise_time_ns(), self.service());
-        /*unsafe {
+        unsafe {
+            ffi::bluetooth_service_dec_refcount(self.service());
             ffi::bluetooth_service_free_service(self.service());
-        }*/
+        }
     }
 }

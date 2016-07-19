@@ -3,6 +3,7 @@ package hu.uszeged.bluetooth;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.util.Log;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.UUID;
@@ -102,7 +103,7 @@ final class BluetoothGattCharacteristicWrapper {
 
     public int[] getValue() {
         Log.i(TAG, "###################<");
-        Log.i(TAG, "getValue byte: "+mCharacteristic.getValue());
+        Log.i(TAG, "getValue byte: "+Arrays.toString(mCharacteristic.getValue()));
         byte[] values = mCharacteristic.getValue();
         if (values == null) {
             return null;
@@ -111,7 +112,7 @@ final class BluetoothGattCharacteristicWrapper {
         for(int i = 0, k = 0; i < values.length; i++) {
             intArray[i] = values[i] & (0xff);
         }
-        Log.i(TAG, "getValue int: "+intArray);
+        Log.i(TAG, "getValue int: "+Arrays.toString(intArray));
         Log.i(TAG, "###################>");
         return intArray;
     }
@@ -125,12 +126,12 @@ final class BluetoothGattCharacteristicWrapper {
         // The values type is int,
         // but only containt u8 values from rust
         Log.i(TAG, "###################<");
-        Log.i(TAG, "setValue int: "+values);
+        Log.i(TAG, "setValue int: "+Arrays.toString(values));
         byte[] byteArray = new byte[values.length];
         for(int i = 0, k = 0; i < values.length; i++) {
             byteArray[i] = (byte) values[i];
         }
-        Log.i(TAG, "setValue byte: "+byteArray);
+        Log.i(TAG, "setValue byte: "+Arrays.toString(byteArray));
         Log.i(TAG, "###################>");
         return mCharacteristic.setValue(byteArray);
     }
@@ -145,7 +146,7 @@ final class BluetoothGattCharacteristicWrapper {
 
     public void writeValue(int[] values) {
         Log.i(TAG, "###################<");
-        Log.i(TAG, "writeValue "+values);
+        Log.i(TAG, "writeValue "+Arrays.toString(values));
         Log.i(TAG, "###################>");
         setValue(values);
         mDevice.getGatt().writeCharacteristic(this);

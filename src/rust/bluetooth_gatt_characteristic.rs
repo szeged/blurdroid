@@ -115,8 +115,9 @@ impl Characteristic {
 
     pub fn write_value(&self, values: Vec<u8>) -> Result<(), Box<Error>> {
         println!("{} Characteristic write_value values: {:?} {:?}", time::precise_time_ns(), values, self.characteristic());
+        let v = values.iter().map(|&x| x as i32).collect::<Vec<i32>>();
         unsafe  {
-            ffi::bluetooth_characteristic_write_value(self.characteristic(), values.as_ptr() as *const c_int, values.len() as c_int)
+            ffi::bluetooth_characteristic_write_value(self.characteristic(), v.as_ptr() as *const c_int, v.len() as c_int)
         }
         Ok(())
     }

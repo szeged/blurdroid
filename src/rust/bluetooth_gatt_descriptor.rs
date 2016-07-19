@@ -96,8 +96,9 @@ impl Descriptor {
 
     pub fn write_value(&self, values: Vec<u8>) -> Result<(), Box<Error>> {
         println!("{} Descriptor write_value values: {:?} {:?}", time::precise_time_ns(), values, self.descriptor());
+        let v = values.iter().map(|&x| x as i32).collect::<Vec<i32>>();
         unsafe  {
-            ffi::bluetooth_descriptor_write_value(self.descriptor(), values.as_ptr() as *const c_int, values.len() as c_int)
+            ffi::bluetooth_descriptor_write_value(self.descriptor(), v.as_ptr() as *const c_int, v.len() as c_int)
         }
         Ok(())
     }

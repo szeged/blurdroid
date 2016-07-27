@@ -61,6 +61,7 @@ jclass jni_find_class (JNIEnv *env, const char* name) {
     if(!name) {LOGE("#### failed to get name");}
     if(!g_ctx.class_loader_obj) {LOGE("#### failed to get g_ctx.class_loader_obj");}
     if(!g_ctx.find_class) {LOGE("#### failed to get g_ctx.find_class");}
+#if 0
     jclass resultClass =
         (jclass) ((*env)->CallObjectMethod(env,
                                            g_ctx.class_loader_obj,
@@ -70,6 +71,34 @@ jclass jni_find_class (JNIEnv *env, const char* name) {
     else {LOGI("#### %s!!",name);}
     jthrowable exception = (*env)->ExceptionOccurred(env);
     if (exception) { (*env)->ExceptionDescribe(env);}
+    if(!resultClass) {
+        LOGE("#### try again %s with default find class", name);
+        resultClass = (*env)->FindClass(env, name);
+        exception = (*env)->ExceptionOccurred(env);
+        if (exception) {(*env)->ExceptionDescribe(env);}
+        if(!resultClass) {LOGE("#### still no %s class", name);}
+        else {LOGI("#### %s!!",name);}
+    }
+#else
+    jclass resultClass =
+        (*env)->FindClass(env, name);
+    if(!resultClass) {LOGE("#### failed to get %s class", name);}
+    else {LOGI("#### %s!!",name);}
+    jthrowable exception = (*env)->ExceptionOccurred(env);
+    if (exception) { (*env)->ExceptionDescribe(env);}
+    if(!resultClass) {
+        LOGE("#### try again %s with default find class", name);
+        resultClass = 
+            (jclass) ((*env)->CallObjectMethod(env,
+                                               g_ctx.class_loader_obj,
+                                               g_ctx.find_class,
+                                               (*env)->NewStringUTF(env, name)));
+        exception = (*env)->ExceptionOccurred(env);
+        if (exception) {(*env)->ExceptionDescribe(env);}
+        if(!resultClass) {LOGE("#### still no %s class", name);}
+        else {LOGI("#### %s!!",name);}
+    }
+#endif
     return resultClass;
 }
 
@@ -85,17 +114,13 @@ jint JNI_OnLoad (JavaVM* vm, void* reserved) {
     }
 
     jni_set_class_loader(env);
+    jni_init(env);
 
     return JNI_VERSION_1_6;
 }
 
-//void jni_adapter_create_adapter (jobject *adapter) {
-jobject jni_adapter_create_adapter () {
-    LOGI("Init init");
-    JNIEnv *env = jni_get_env();
-    if (env == NULL) {
-        return;
-    }
+void jni_init(JNIEnv *env) {
+    LOGI("Init jni_init");
     // Adapter class
     LOGI("Init adapter class");
     jclass classBta = jni_find_class(env, "hu/uszeged/bluetooth/BluetoothAdapterWrapper");
@@ -401,7 +426,14 @@ jobject jni_adapter_create_adapter () {
         (*env)->GetMethodID(env, g_ctx.descriptor_cls,
                             "writeValue",
                             "([I)V");
+}
 
+jobject jni_adapter_create_adapter () {
+    LOGI("Init jni_adapter_create_adapter");
+    JNIEnv *env = jni_get_env();
+    if (env == NULL) {
+        return;
+    }
     // Adapter object
     LOGI("Init adapter object");
     jobject objBta = (jobject)

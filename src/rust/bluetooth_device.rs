@@ -3,10 +3,13 @@ use std::cell::Cell;
 use std::error::Error;
 use std::os::raw::{c_char};
 use std::ptr;
+use std::sync::Arc;
 use utils;
 use time;
 
 use bluetooth_adapter::Adapter;
+
+const NOT_SUPPORTED_ERROR: &'static str = "Error! Not supported platform!";
 
 #[derive(Clone, Debug)]
 struct IDevice {
@@ -25,7 +28,7 @@ impl Device {
         self.i.device.get()
     }
 
-    pub fn new(adapter: Adapter, address: String) -> Device {
+    pub fn new(adapter: Arc<Adapter>, address: String) -> Device {
         println!("{} Device new", time::precise_time_ns());
         let device = unsafe { ffi::bluetooth_device_create_device(adapter.adapter(), address.as_ptr() as *const c_char) };
         if device == ptr::null_mut() {
@@ -52,9 +55,13 @@ impl Device {
         res
     }*/
 
-    pub fn get_address(&self) -> String {
-        println!("{} Device get_address {}", time::precise_time_ns(), self.address);
+    pub fn get_id(&self) -> String {
         self.address.clone()
+    }
+
+    pub fn get_address(&self) -> Result<String, Box<Error>> {
+        println!("{} Device get_address {}", time::precise_time_ns(), self.address);
+        Ok(self.address.clone())
     }
 
     pub fn get_name(&self) -> Result<String, Box<Error>> {
@@ -69,7 +76,7 @@ impl Device {
         res
     }
 
-    pub fn connect(&mut self) -> Result<(), Box<Error>> {
+    pub fn connect(&self) -> Result<(), Box<Error>> {
         println!("{} Device connect {:?}", time::precise_time_ns(), self.device());
         unsafe {
             Ok(ffi::bluetooth_device_connect_gatt(self.device()))
@@ -83,14 +90,14 @@ impl Device {
         }
     }
 
-    pub fn is_connected(&mut self) -> Result<bool, Box<Error>> {
+    pub fn is_connected(&self) -> Result<bool, Box<Error>> {
         println!("{} Device is_connected {:?}", time::precise_time_ns(), self.device());
         unsafe {
             Ok(ffi::bluetooth_device_is_connected(self.device()).is_positive())
         }
     }
 
-    pub fn get_gatt_services(&mut self) -> Result<Vec<i32>, Box<Error>> {
+    pub fn get_gatt_services(&self) -> Result<Vec<String>, Box<Error>> {
         println!("####GET_GATT_SERVICES####");
         let mut v = vec!();
         unsafe {
@@ -107,11 +114,95 @@ impl Device {
                 println!("#### serv offset {:?} ####", s_ptr);
                 let s = s_ptr as i32;
                 println!("#### SERVICE #{}: {:?} ####", i, s);
-                v.push(s);
+                v.push(s.to_string());
             }
             ffi::bluetooth_device_free_int_array(services);
         }
         Ok(v)
+    }
+
+    pub fn get_icon(&self) -> Result<String, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_class(&self) -> Result<u32, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_appearance(&self) -> Result<u16, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_uuids(&self) -> Result<Vec<String>, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn is_paired(&self) -> Result<bool, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn is_trusted(&self) -> Result<bool, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn is_blocked(&self) -> Result<bool, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_alias(&self) -> Result<String, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn set_alias(&self, _value: String) -> Result<(), Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn is_legacy_pairing(&self) -> Result<bool, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_vendor_id_source(&self) -> Result<String, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_vendor_id(&self) -> Result<u32, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_product_id(&self) -> Result<u32, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_device_id(&self) -> Result<u32, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_modalias(&self) -> Result<(String, u32, u32, u32), Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_rssi(&self) -> Result<i16, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_tx_power(&self) -> Result<i16, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn connect_profile(&self, _uuid: String) -> Result<(), Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn disconnect_profile(&self, _uuid: String) -> Result<(), Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn pair(&self) -> Result<(), Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn cancel_pairing(&self) -> Result<(), Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
     }
 }
 

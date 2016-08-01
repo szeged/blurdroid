@@ -3,10 +3,13 @@ use std::cell::Cell;
 use std::error::Error;
 use std::os::raw::{c_int};
 use std::ptr;
+use std::sync::Arc;
 use utils;
 use time;
 
 use bluetooth_gatt_service::Service;
+
+const NOT_SUPPORTED_ERROR: &'static str = "Error! Not supported platform!";
 
 #[derive(Clone, Debug)]
 struct ICharacteristic {
@@ -16,7 +19,7 @@ struct ICharacteristic {
 #[derive(Debug)]
 pub struct Characteristic {
     i: Box<ICharacteristic>,
-    id: i32,
+    id: String,
 }
 
 impl Characteristic {
@@ -25,9 +28,9 @@ impl Characteristic {
         self.i.characteristic.get()
     }
 
-    pub fn new(service: Service, id: i32) -> Characteristic {
+    pub fn new(service: Arc<Service>, id: String) -> Characteristic {
         println!("{} Characteristic new", time::precise_time_ns());
-        let characteristic = unsafe { ffi::bluetooth_characteristic_create_characteristic(service.service(), id) };
+        let characteristic = unsafe { ffi::bluetooth_characteristic_create_characteristic(service.service(), id.parse::<i32>().unwrap()) };
         if characteristic == ptr::null_mut() {
             //return Err(Box::from("No service found!"));
             println!("#### NO SERVICE FOUND!!!!! {:?}", characteristic);
@@ -40,8 +43,8 @@ impl Characteristic {
         c
     }
 
-    pub fn get_id(&self) -> i32 {
-        self.id
+    pub fn get_id(&self) -> String {
+        self.id.clone()
     }
 
     pub fn get_uuid(&self) -> Result<String, Box<Error>> {
@@ -56,7 +59,7 @@ impl Characteristic {
         res
     }
 
-    pub fn get_gatt_descriptors(&mut self) -> Result<Vec<i32>, Box<Error>> {
+    pub fn get_gatt_descriptors(&self) -> Result<Vec<String>, Box<Error>> {
         println!("####GET_GATT_DESCRIPTORS####");
         let mut v = vec!();
         unsafe {
@@ -68,7 +71,7 @@ impl Characteristic {
                 let d_ptr = *descriptors.offset(i);
                 let d = d_ptr as i32;
                 println!("#### DESCRIPTOR #{}: {:?} ####", i, d);
-                v.push(d);
+                v.push(d.to_string());
             }
             ffi::bluetooth_characteristic_free_int_array(descriptors);
         }
@@ -121,6 +124,22 @@ impl Characteristic {
         }
         Ok(())
     }
+
+    pub fn is_notifying(&self) -> Result<bool, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_flags(&self) -> Result<Vec<String>, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn start_notify(&self) -> Result<(), Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn stop_notify(&self) -> Result<(), Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
 }
 
 impl Clone for Characteristic {
@@ -129,7 +148,7 @@ impl Clone for Characteristic {
         unsafe { ffi::bluetooth_characteristic_inc_refcount(self.characteristic()) };
         Characteristic {
             i: self.i.clone(),
-            id: self.id,
+            id: self.id.clone(),
         }
     }
 }

@@ -1,21 +1,22 @@
 use std::error::Error;
+use std::sync::Arc;
 use ffi;
 use bluetooth_adapter::Adapter;
 
 #[derive(Debug)]
 pub struct DiscoverySession {
-    adapter: Adapter,
+    adapter: Arc<Adapter>,
 }
 
 impl DiscoverySession {
-    fn new(adapter: Adapter) -> DiscoverySession {
+    fn new(adapter: Arc<Adapter>) -> DiscoverySession {
         DiscoverySession {
             adapter: adapter,
         }
     }
 
-    pub fn create_session(adapter: Adapter) -> Result<DiscoverySession, Box<Error>> {
-        Ok(DiscoverySession::new(adapter))
+    pub fn create_session(adapter: Arc<Adapter>) -> Result<DiscoverySession, Box<Error>> {
+        Ok(DiscoverySession::new(adapter.clone()))
     }
 
     pub fn start_discovery(&self) -> Result<(), Box<Error>> {

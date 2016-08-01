@@ -2,10 +2,13 @@ use ffi;
 use std::cell::Cell;
 use std::error::Error;
 use std::ptr;
+use std::sync::Arc;
 use utils;
 use time;
 
 use bluetooth_device::Device;
+
+const NOT_SUPPORTED_ERROR: &'static str = "Error! Not supported platform!";
 
 #[derive(Clone, Debug)]
 struct IService {
@@ -15,7 +18,7 @@ struct IService {
 #[derive(Debug)]
 pub struct Service {
     i: Box<IService>,
-    id: i32,
+    id: String,
 }
 
 impl Service {
@@ -24,9 +27,9 @@ impl Service {
         self.i.service.get()
     }
 
-    pub fn new(device: Device, id: i32) -> Service {
+    pub fn new(device: Arc<Device>, id: String) -> Service {
         println!("{} Service new", time::precise_time_ns());
-        let service = unsafe { ffi::bluetooth_service_create_service(device.device(), id) };
+        let service = unsafe { ffi::bluetooth_service_create_service(device.device(), id.parse::<i32>().unwrap()) };
         if service == ptr::null_mut() {
             //return Err(Box::from("No device found!"));
             println!("#### NO SERVICE FOUND!!!!! {:?}", service);
@@ -39,8 +42,8 @@ impl Service {
         s
     }
 
-    pub fn get_id(&self) -> i32 {
-        self.id
+    pub fn get_id(&self) -> String {
+        self.id.clone()
     }
 
     pub fn get_uuid(&self) -> Result<String, Box<Error>> {
@@ -55,14 +58,14 @@ impl Service {
         res
     }
 
-    pub fn is_primary(&mut self) -> Result<bool, Box<Error>> {
+    pub fn is_primary(&self) -> Result<bool, Box<Error>> {
         println!("{} Service is_primary {:?}", time::precise_time_ns(), self.service());
         unsafe {
             Ok(ffi::bluetooth_service_is_primary(self.service()).is_positive())
         }
     }
 
-    pub fn get_gatt_characteristics(&mut self) -> Result<Vec<i32>, Box<Error>> {
+    pub fn get_gatt_characteristics(&self) -> Result<Vec<String>, Box<Error>> {
         println!("####GET_GATT_CHARACTERISTICS####");
         let mut v = vec!();
         unsafe {
@@ -74,11 +77,15 @@ impl Service {
                 let c_ptr = *characteristics.offset(i);
                 let c = c_ptr as i32;
                 println!("#### CHARACTERISTICS #{}: {:?} ####", i, c);
-                v.push(c);
+                v.push(c.to_string());
             }
             ffi::bluetooth_service_free_int_array(characteristics);
         }
         Ok(v)
+    }
+
+    pub fn get_includes(&self) -> Result<Vec<String>, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
     }
 }
 
@@ -88,7 +95,7 @@ impl Clone for Service {
         unsafe { ffi::bluetooth_service_inc_refcount(self.service()) };
         Service {
             i: self.i.clone(),
-            id: self.id,
+            id: self.id.clone(),
         }
     }
 }

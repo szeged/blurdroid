@@ -3,10 +3,13 @@ use std::cell::Cell;
 use std::error::Error;
 use std::os::raw::{c_int};
 use std::ptr;
+use std::sync::Arc;
 use utils;
 use time;
 
 use bluetooth_gatt_characteristic::Characteristic;
+
+const NOT_SUPPORTED_ERROR: &'static str = "Error! Not supported platform!";
 
 #[derive(Clone, Debug)]
 struct IDescriptor {
@@ -16,7 +19,7 @@ struct IDescriptor {
 #[derive(Debug)]
 pub struct Descriptor {
     i: Box<IDescriptor>,
-    id: i32,
+    id: String,
 }
 
 impl Descriptor {
@@ -25,9 +28,9 @@ impl Descriptor {
         self.i.descriptor.get()
     }
 
-    pub fn new(characteristic: Characteristic, id: i32) -> Descriptor {
+    pub fn new(characteristic: Arc<Characteristic>, id: String) -> Descriptor {
         println!("{} Descriptor new", time::precise_time_ns());
-        let descriptor = unsafe { ffi::bluetooth_descriptor_create_descriptor(characteristic.characteristic(), id) };
+        let descriptor = unsafe { ffi::bluetooth_descriptor_create_descriptor(characteristic.characteristic(), id.parse::<i32>().unwrap()) };
         if descriptor == ptr::null_mut() {
             //return Err(Box::from("No characteristic found!"));
             println!("#### NO DESCRIPTOR FOUND!!!!! {:?}", descriptor);
@@ -35,13 +38,13 @@ impl Descriptor {
         println!("{} Descriptor new {:?}", time::precise_time_ns(), descriptor);
         let d = Descriptor {
             i: Box::new(IDescriptor { descriptor: Cell::new(descriptor) }),
-            id: id,
+            id: id.clone(),
         };
         d
     }
 
-    pub fn get_id(&self) -> i32 {
-        self.id
+    pub fn get_id(&self) -> String {
+        self.id.clone()
     }
 
     pub fn get_uuid(&self) -> Result<String, Box<Error>> {
@@ -102,6 +105,10 @@ impl Descriptor {
         }
         Ok(())
     }
+
+    pub fn get_flags(&self) -> Result<Vec<String>, Box<Error>> {
+        Err(Box::from(NOT_SUPPORTED_ERROR))
+    }
 }
 
 impl Clone for Descriptor {
@@ -110,7 +117,7 @@ impl Clone for Descriptor {
         unsafe { ffi::bluetooth_descriptor_inc_refcount(self.descriptor()) };
         Descriptor {
             i: self.i.clone(),
-            id: self.id,
+            id: self.id.clone(),
         }
     }
 }

@@ -12,50 +12,45 @@ final class BluetoothGattServiceWrapper {
 
     private BluetoothGattService mService;
     private BluetoothDeviceWrapper mDevice;
+    private int mId;
 
     public BluetoothGattServiceWrapper(BluetoothGattService service,
-        BluetoothDeviceWrapper device) {
-        Log.i(TAG, "ctor");
+        BluetoothDeviceWrapper device, int id) {
         mService = service;
         mDevice = device;
-        Log.i(TAG, "Service: "+mService.getUuid().toString());
-        Log.i(TAG, "Service: "+mService.getInstanceId());
+        mId = id;
     }
 
     public static BluetoothGattServiceWrapper create(BluetoothGattService service,
-        BluetoothDeviceWrapper device) {
-        Log.i(TAG, "create");
-        return new BluetoothGattServiceWrapper(service, device);
+        BluetoothDeviceWrapper device, int id) {
+        return new BluetoothGattServiceWrapper(service, device, id);
     }
 
     public BluetoothGattService get() {
-        Log.i(TAG, "get");
         return mService;
     }
 
+    public int getId() {
+        return mId;
+    }
+
     public String getUuid() {
-        Log.i(TAG, "getUuid");
         return mService.getUuid().toString();
     }
 
     public int getInstanceId() {
-        Log.i(TAG, "getInstanceId");
         return mService.getInstanceId();
     }
 
     public int getType() {
-        Log.i(TAG, "getType");
         return mService.getType();
     }
 
     public boolean isPrimary() {
-        Log.i(TAG, "isPrimary");
         return getType() == mService.SERVICE_TYPE_PRIMARY;
     }
 
-    //TODO Set -> List
     public Set<BluetoothGattCharacteristicWrapper> getCharacteristics() {
-        Log.i(TAG, "getCharacteristics");
         for (BluetoothGattCharacteristic characteristics : mService.getCharacteristics()) {
             mDevice.addCharacteristic(characteristics);
         }
@@ -63,7 +58,6 @@ final class BluetoothGattServiceWrapper {
     }
 
     public BluetoothGattCharacteristicWrapper getCharacteristic(String uuid) {
-        Log.i(TAG, "getCharacteristic");
         for (BluetoothGattCharacteristicWrapper characteristic : mDevice.getCharacteristics()) {
             if (characteristic.getUuid() == uuid) {
                 return characteristic;           
@@ -73,17 +67,18 @@ final class BluetoothGattServiceWrapper {
     }
 
     public BluetoothGattCharacteristicWrapper getCharacteristic(int id) {
-        Log.i(TAG, "getCharacteristic");
         return mDevice.getCharacteristic(id);
     }
 
-    //TODO Set -> List
+    public int getCharacteristicsSize() {
+        return mDevice.getCharacteristicsSize();
+    }
+
     public Set<BluetoothGattServiceWrapper> getIncludedServices() {
-        Log.i(TAG, "getIncludedServices");
         Set<BluetoothGattServiceWrapper> result
             = new HashSet<BluetoothGattServiceWrapper>();
         for (BluetoothGattService service : mService.getIncludedServices()) {
-            result.add(BluetoothGattServiceWrapper.create(service, mDevice));
+            result.add(BluetoothGattServiceWrapper.create(service, mDevice, service.hashCode()));
         }
         return result;
     }

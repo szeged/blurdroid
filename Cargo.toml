@@ -6,4 +6,4 @@ build = "build.rs"
 
 [lib]
 name = "blurdroid"
-path = "src/lib.rs"
+path = "src/rust/lib.rs"

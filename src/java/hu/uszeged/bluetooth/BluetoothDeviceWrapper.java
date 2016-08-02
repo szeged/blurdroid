@@ -22,110 +22,109 @@ final class BluetoothDeviceWrapper {
     private BluetoothGattCallbackWrapper mCallback;
     private HashMap<Integer, BluetoothGattServiceWrapper> mServices;
     private HashMap<Integer, BluetoothGattCharacteristicWrapper> mCharacteristics;
-    private HashMap<String, BluetoothGattDescriptorWrapper> mDescriptors;
+    private HashMap<Integer, BluetoothGattDescriptorWrapper> mDescriptors;
+    private boolean mConnected;
 
     public BluetoothDeviceWrapper(BluetoothDevice device) {
-        Log.i(TAG, "ctor");
         mDevice = device;
         mServices = new HashMap<Integer, BluetoothGattServiceWrapper>();
         mCharacteristics = new HashMap<Integer, BluetoothGattCharacteristicWrapper>();
-        mDescriptors = new HashMap<String, BluetoothGattDescriptorWrapper>();
-        Log.i(TAG, "device address: "+ mDevice.getAddress());
+        mDescriptors = new HashMap<Integer, BluetoothGattDescriptorWrapper>();
+        mConnected = false;
     }
 
     public static BluetoothDeviceWrapper create(BluetoothDevice device) {
-        Log.i(TAG, "create");
         return new BluetoothDeviceWrapper(device);
     }
 
     public String getAddress() {
-        Log.i(TAG, "getAddress");
         return mDevice.getAddress();
     }
 
     public String getName() {
-        Log.i(TAG, "getName");
         return mDevice.getName();
     }
 
+    public boolean isConnected() {
+        return mConnected;
+    }
+
+    public void setConnected(boolean connected) {
+        mConnected = connected;
+    }
+
     public BluetoothGattWrapper connectGatt(Context context, boolean autoConnect) {
-        Log.i(TAG, "connectGatt");
         if (mGatt != null) {
-            mGatt.connect();
+            if (mConnected) {
+                mGatt.discoverServices();
+            } else {
+                mGatt.connect();
+            }
             return mGatt;
         }
         mGatt = BluetoothGattWrapper.create(
-            mDevice.connectGatt(context, autoConnect,
+            mDevice.connectGatt(context, /*autoConnect*/ false,
                 BluetoothGattCallbackWrapper.create(
-                    this)), this);
+                    this)/*, BluetoothDevice.TRANSPORT_LE*/), this);
         return mGatt;
     }
 
+    public void disconnect() {
+        mGatt.disconnect();
+    }
+
     public BluetoothGattWrapper getGatt() {
-        Log.i(TAG, "getGatt");
         return mGatt;
     }
 
     public Set<BluetoothGattServiceWrapper> getServices() {
-        Log.i(TAG, "getServices");
         return new HashSet<BluetoothGattServiceWrapper>(mServices.values());
     }
 
     public BluetoothGattServiceWrapper getService(int id) {
-        Log.i(TAG, "getService");
         return mServices.get(id);
     }
 
     public void addService(BluetoothGattService service) {
-        Log.i(TAG, "addService");
-        mServices.put(service.getInstanceId(),
-            BluetoothGattServiceWrapper.create(service, this));
+        mServices.put(service.hashCode(),
+            BluetoothGattServiceWrapper.create(service, this, service.hashCode()));
     }
 
     public int getServicesSize() {
-        Log.i(TAG, "getServicesSize");
         return mServices.values().size();
     }
 
     public Set<BluetoothGattCharacteristicWrapper> getCharacteristics() {
-        Log.i(TAG, "getCharacteristics");
         return new HashSet<BluetoothGattCharacteristicWrapper>(mCharacteristics.values());
     }
 
     public BluetoothGattCharacteristicWrapper getCharacteristic(int id) {
-        Log.i(TAG, "getCharacteristic");
         return mCharacteristics.get(id);
     }
 
     public void addCharacteristic(BluetoothGattCharacteristic characteristic) {
-        Log.i(TAG, "addCharacteristics");
-        mCharacteristics.put(characteristic.getInstanceId(),
-            BluetoothGattCharacteristicWrapper.create(characteristic, this));
+        mCharacteristics.put(characteristic.hashCode(),
+            BluetoothGattCharacteristicWrapper.create(characteristic, this, characteristic.hashCode()));
     }
 
     public int getCharacteristicsSize() {
-        Log.i(TAG, "getCharacteristicsSize");
         return mCharacteristics.values().size();
     }
 
     public Set<BluetoothGattDescriptorWrapper> getDescriptors() {
-        Log.i(TAG, "getDescriptors");
         return new HashSet<BluetoothGattDescriptorWrapper>(mDescriptors.values());
     }
 
-    public BluetoothGattDescriptorWrapper getDescriptor(String uuid) {
-        Log.i(TAG, "getDescriptor");
-        return mDescriptors.get(uuid);
+    public BluetoothGattDescriptorWrapper getDescriptor(int id) {
+        return mDescriptors.get(id);
     }
 
     public void addDescriptor(BluetoothGattDescriptor descriptor) {
-        Log.i(TAG, "addDescriptors");
-        mDescriptors.put(descriptor.getUuid().toString(),
-            BluetoothGattDescriptorWrapper.create(descriptor, this));
+        mDescriptors.put(descriptor.hashCode(),
+            BluetoothGattDescriptorWrapper.create(descriptor, this, descriptor.hashCode()));
     }
 
     public int getDescriptorsSize() {
-        Log.i(TAG, "getDescriptorsSize");
         return mServices.values().size();
     }
 }

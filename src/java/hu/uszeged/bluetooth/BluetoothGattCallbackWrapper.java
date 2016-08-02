@@ -13,54 +13,50 @@ final class BluetoothGattCallbackWrapper extends BluetoothGattCallback {
     private BluetoothDeviceWrapper mDevice;
 
     public BluetoothGattCallbackWrapper(BluetoothDeviceWrapper device) {
-        Log.i(TAG, "ctor");
         mDevice = device;
     }
 
     public static BluetoothGattCallbackWrapper create(
             BluetoothDeviceWrapper device) {
-        Log.i(TAG, "create");
         return new BluetoothGattCallbackWrapper(device);
     }
 
     @Override
     public void onCharacteristicChanged(
             BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-        Log.i(TAG, "onCharacteristicChanged");
     }
 
     @Override
     public void onCharacteristicRead(
             BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-        Log.i(TAG, "onCharacteristicRead");
     }
 
     @Override
     public void onCharacteristicWrite(
             BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-        Log.i(TAG, "onCharacteristicWrite");
     }
 
     @Override
     public void onDescriptorRead(
             BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-        Log.i(TAG, "onDescriptorRead");
     }
 
     @Override
     public void onDescriptorWrite(
             BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-        Log.i(TAG, "onDescriptorWrite");
     }
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-        Log.i(TAG, "#### onConnectionStateChange ####");
-        mDevice.getGatt().discoverServices();
+        mDevice.setConnected(newState == BluetoothGatt.STATE_CONNECTED);
+        if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (newState == BluetoothGatt.STATE_CONNECTED) {
+                mDevice.getGatt().discoverServices();
+            }
+        }
     }
 
     @Override
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-        Log.i(TAG, "#### onServicesDiscovered ####");
     }
 }

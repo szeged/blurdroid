@@ -2,6 +2,7 @@ package hu.uszeged.bluetooth;
 
 import android.bluetooth.BluetoothGattDescriptor;
 import android.util.Log;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -10,38 +11,66 @@ final class BluetoothGattDescriptorWrapper {
 
     private BluetoothGattDescriptor mDescriptor;
     private BluetoothDeviceWrapper mDevice;
+    private int mId;
 
     public BluetoothGattDescriptorWrapper(BluetoothGattDescriptor descriptor,
-        BluetoothDeviceWrapper device) {
-        Log.i(TAG, "ctor");
+        BluetoothDeviceWrapper device, int id) {
         mDescriptor = descriptor;
         mDevice = device;
-        Log.i(TAG, "Descriptor: "+mDescriptor.getUuid().toString());
+        mId = id;
     }
 
     public static BluetoothGattDescriptorWrapper create(BluetoothGattDescriptor descriptor,
-        BluetoothDeviceWrapper device) {
-        Log.i(TAG, "create");
-        return new BluetoothGattDescriptorWrapper(descriptor, device);
+        BluetoothDeviceWrapper device, int id) {
+        return new BluetoothGattDescriptorWrapper(descriptor, device, id);
     }
 
     public BluetoothGattDescriptor get() {
-        Log.i(TAG, "get");
         return mDescriptor;
     }
 
+    public int getId() {
+        return mId;
+    }
+
     public String getUuid() {
-        Log.i(TAG, "getUuid");
         return mDescriptor.getUuid().toString();
     }
 
-    public byte[] getValue() {
-        Log.i(TAG, "getValue");
-        return mDescriptor.getValue();
+    public int[] getValue() {
+        byte[] values = mDescriptor.getValue();
+        if (values == null) {
+            return null;
+        }
+        int[] intArray = new int[values.length];
+        for(int i = 0, k = 0; i < values.length; i++) {
+            intArray[i] = values[i] & (0xff);
+        }
+        return intArray;
     }
 
-    public boolean setValue(byte[] value) {
-        Log.i(TAG, "setValue");
-        return mDescriptor.setValue(value);
+    public int getValueSize() {
+        int[] values = getValue();
+        return (values == null) ? 0 : values.length;
+    }
+
+    public boolean setValue(int[] values) {
+        // The values type is int,
+        // but only containt u8 values from rust
+        byte[] byteArray = new byte[values.length];
+        for(int i = 0, k = 0; i < values.length; i++) {
+            byteArray[i] = (byte) values[i];
+        }
+        return mDescriptor.setValue(byteArray);
+    }
+
+    public int[] readValue() {
+        mDevice.getGatt().readDescriptor(this);
+        return getValue();
+    }
+
+    public void writeValue(int[] values) {
+        setValue(values);
+        mDevice.getGatt().writeDescriptor(this);
     }
 }

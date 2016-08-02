@@ -1,6 +1,6 @@
 # blurdroid
 Build
 ```
-$ #set NDK_HOME env
+$ #set ANDROID_NDK and ANDROID_SDK env
 $ cargo build --target=arm-linux-androideabi
 ```

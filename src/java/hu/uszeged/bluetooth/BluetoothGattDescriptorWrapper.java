@@ -15,27 +15,17 @@ final class BluetoothGattDescriptorWrapper {
 
     public BluetoothGattDescriptorWrapper(BluetoothGattDescriptor descriptor,
         BluetoothDeviceWrapper device, int id) {
-        Log.i(TAG, "###################<");
-        Log.i(TAG, "ctor");
-        Log.i(TAG, "###################>");
         mDescriptor = descriptor;
         mDevice = device;
         mId = id;
-        Log.i(TAG, "Descriptor: "+mDescriptor.getUuid().toString());
     }
 
     public static BluetoothGattDescriptorWrapper create(BluetoothGattDescriptor descriptor,
         BluetoothDeviceWrapper device, int id) {
-        Log.i(TAG, "###################<");
-        Log.i(TAG, "create");
-        Log.i(TAG, "###################>");
         return new BluetoothGattDescriptorWrapper(descriptor, device, id);
     }
 
     public BluetoothGattDescriptor get() {
-        Log.i(TAG, "###################<");
-        Log.i(TAG, "get");
-        Log.i(TAG, "###################>");
         return mDescriptor;
     }
 
@@ -44,15 +34,10 @@ final class BluetoothGattDescriptorWrapper {
     }
 
     public String getUuid() {
-        Log.i(TAG, "###################<");
-        Log.i(TAG, "getUuid "+mDescriptor.getUuid().toString());
-        Log.i(TAG, "###################>");
         return mDescriptor.getUuid().toString();
     }
 
     public int[] getValue() {
-        Log.i(TAG, "###################<");
-        Log.i(TAG, "getValue byte: "+Arrays.toString(mDescriptor.getValue()));
         byte[] values = mDescriptor.getValue();
         if (values == null) {
             return null;
@@ -61,8 +46,6 @@ final class BluetoothGattDescriptorWrapper {
         for(int i = 0, k = 0; i < values.length; i++) {
             intArray[i] = values[i] & (0xff);
         }
-        Log.i(TAG, "getValue int: "+Arrays.toString(intArray));
-        Log.i(TAG, "###################>");
         return intArray;
     }
 
@@ -74,29 +57,19 @@ final class BluetoothGattDescriptorWrapper {
     public boolean setValue(int[] values) {
         // The values type is int,
         // but only containt u8 values from rust
-        Log.i(TAG, "###################<");
-        Log.i(TAG, "setValue int: "+Arrays.toString(values));
         byte[] byteArray = new byte[values.length];
         for(int i = 0, k = 0; i < values.length; i++) {
             byteArray[i] = (byte) values[i];
         }
-        Log.i(TAG, "setValue byte: "+Arrays.toString(byteArray));
-        Log.i(TAG, "###################>");
         return mDescriptor.setValue(byteArray);
     }
 
     public int[] readValue() {
-        Log.i(TAG, "###################<");
-        Log.i(TAG, "readValue ");
-        Log.i(TAG, "###################>");
         mDevice.getGatt().readDescriptor(this);
         return getValue();
     }
 
     public void writeValue(int[] values) {
-        Log.i(TAG, "###################<");
-        Log.i(TAG, "writeValue "+Arrays.toString(values));
-        Log.i(TAG, "###################>");
         setValue(values);
         mDevice.getGatt().writeDescriptor(this);
     }

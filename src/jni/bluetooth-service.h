@@ -1,4 +1,3 @@
-//TODO copyright
 #ifndef BLUETOOTH_SERVICE_H_
 #define BLUETOOTH_SERVICE_H_
 

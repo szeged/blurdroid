@@ -1,10 +1,11 @@
 use std::ffi::{CStr};
-use std::ptr::{self};
 use std::os::raw::{c_char};
+use std::ptr::{self};
 use std::str::from_utf8;
 
+pub const NOT_SUPPORTED_ERROR: &'static str = "Error! Not supported platform!";
+
 pub fn c_str_to_slice(c: & *const c_char) -> Option<&str> {
-    println!("####c_str_to_slice {:?}####", c);
     if *c == ptr::null() {
         None
     } else {

@@ -1,5 +1,4 @@
 use std::os::raw::{c_char, c_int, c_void};
-//use libc::{c_void, c_char, c_uint, c_int};
 
 pub type BluetoothAdapter = c_void;
 pub type BluetoothDevice = c_void;

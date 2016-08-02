@@ -1,6 +1,3 @@
-//extern crate libc;
-extern crate time;
-
 pub use bluetooth_adapter::Adapter;
 pub use bluetooth_device::Device;
 pub use bluetooth_gatt_service::Service;

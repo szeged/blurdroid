@@ -1,4 +1,3 @@
-//TODO copyright
 #ifndef BLUETOOTH_ADAPTER_H_
 #define BLUETOOTH_ADAPTER_H_
 

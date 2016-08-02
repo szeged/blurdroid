@@ -1,4 +1,3 @@
-//TODO copyright
 #ifndef BLUETOOTH_DESCRIPTOR_H_
 #define BLUETOOTH_DESCRIPTOR_H_
 

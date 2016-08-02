@@ -1,7 +1,7 @@
+use bluetooth_adapter::Adapter;
+use ffi;
 use std::error::Error;
 use std::sync::Arc;
-use ffi;
-use bluetooth_adapter::Adapter;
 
 #[derive(Debug)]
 pub struct DiscoverySession {

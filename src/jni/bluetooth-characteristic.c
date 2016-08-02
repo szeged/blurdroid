@@ -1,4 +1,3 @@
-//TODO copyright
 #include "bluetooth-characteristic.h"
 
 #include <stdlib.h>

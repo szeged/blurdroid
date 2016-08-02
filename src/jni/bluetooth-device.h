@@ -1,4 +1,3 @@
-//TODO copyright
 #ifndef BLUETOOTH_DEVICE_H_
 #define BLUETOOTH_DEVICE_H_
 

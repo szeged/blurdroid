@@ -14,26 +14,8 @@ static const char* kTAG = "blurdroid";
 typedef struct {
     // jvm
     JavaVM *javaVM;
-    // main activity
-    jclass main_activity_cls;
-    //jobject main_activity_obj;
-    // class loader
-    jclass class_loader_cls;
-    jclass class_cls;
-    jobject class_loader_obj;
-    jmethodID find_class;
-    jmethodID get_class_loader;
-    // app
-    //jclass app_global_cls;
-    //jobject app_global_obj;
-    //jmethodID get_initial_application;
-    //jmethodID get_application_context;
-    // context
-    //jclass context_cls;
-    //jobject context_obj;
     // adapter
     jclass adapter_cls;
-    //jobject adapter_obj;
     jmethodID adapter_get_adapter;
     jmethodID adapter_get_address;
     jmethodID adapter_get_name;
@@ -93,6 +75,15 @@ typedef struct {
     jmethodID descriptor_get_value_size;
     jmethodID descriptor_read_value;
     jmethodID descriptor_write_value;
+    // utils
+    jclass set_cls;
+    jmethodID set_iterator;
+    jmethodID set_size;
+    jclass iterator_cls;
+    jmethodID iterator_has_next;
+    jmethodID iterator_next;
+    jclass activity_thread_cls;
+    jmethodID activity_thread_current_application;
 } BTContext;
 
 BTContext g_ctx;

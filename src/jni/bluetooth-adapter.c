@@ -1,4 +1,3 @@
-//TODO copyright
 #include "bluetooth-adapter.h"
 
 #include <stdlib.h>

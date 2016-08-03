@@ -41,7 +41,7 @@ impl Descriptor {
             Some(a) => Ok(a.to_string()),
             None => Err(Box::from("No uuid!")),
         };
-        unsafe { ffi::bluetooth_descriptor_free_string(uuid) };
+        unsafe { ffi::jni_free_string(uuid) };
         res
     }
 
@@ -55,7 +55,7 @@ impl Descriptor {
                 let val = (val_ptr as i32) as u8;
                 v.push(val);
             }
-            ffi::bluetooth_descriptor_free_int_array(values);
+            ffi::jni_free_int_array(values);
         }
         Ok(v)
     }
@@ -70,7 +70,7 @@ impl Descriptor {
                 let val = (val_ptr as i32) as u8;
                 v.push(val);
             }
-            ffi::bluetooth_descriptor_free_int_array(values);
+            ffi::jni_free_int_array(values);
         }
         Ok(v)
     }

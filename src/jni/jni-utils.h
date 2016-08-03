@@ -5,11 +5,11 @@
 
 static const char* kTAG = "blurdroid";
 #define LOGI(...) \
-  ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
+  ((void)__android_log_print (ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
 #define LOGW(...) \
-  ((void)__android_log_print(ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
+  ((void)__android_log_print (ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
 #define LOGE(...) \
-  ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
+  ((void)__android_log_print (ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
 
 typedef struct {
     // jvm
@@ -82,55 +82,22 @@ typedef struct {
     jclass iterator_cls;
     jmethodID iterator_has_next;
     jmethodID iterator_next;
-    jclass activity_thread_cls;
-    jmethodID activity_thread_current_application;
 } BTContext;
 
 BTContext g_ctx;
 
-// adapter
-jobject jni_adapter_create_adapter ();
-const char* jni_adapter_get_address (jobject);
-const char* jni_adapter_get_name (jobject);
-void jni_adapter_start_discovery (jobject);
-void jni_adapter_stop_discovery (jobject);
-const char** jni_adapter_get_devices (jobject);
-int jni_adapter_get_devices_size (jobject);
-
-// device
-jobject jni_adapter_create_device (jobject, const char*);
-const char* jni_device_get_address (jobject);
-const char* jni_device_get_name (jobject);
-void jni_device_connect_gatt (jobject);
-void jni_device_disconnect (jobject);
-int jni_device_is_connected (jobject);
-const int* jni_device_get_gatt_services (jobject);
-int jni_device_get_gatt_services_size (jobject);
-
-// service
-jobject jni_device_create_service(jobject, int);
-const char* jni_service_get_uuid(jobject);
-int jni_service_is_primary(jobject);
-const int* jni_service_get_gatt_characteristics (jobject);
-int jni_service_get_gatt_characteristics_size (jobject);
-
-// characteristic
-jobject jni_service_create_characteristic(jobject, int);
-const char* jni_characteristic_get_uuid(jobject);
-int jni_characteristic_is_primary(jobject);
-const int* jni_characteristic_get_gatt_descriptors (jobject);
-int jni_characteristic_get_gatt_descriptors_size (jobject);
-const int* jni_characteristic_get_value(jobject);
-const int jni_characteristic_get_value_size(jobject);
-const int* jni_characteristic_read_value(jobject);
-void jni_characteristic_write_value(jobject, const int*, int);
-
-// descriptor
-jobject jni_characteristic_create_descriptor(jobject, int);
-const char* jni_descriptor_get_uuid(jobject);
-const int* jni_descriptor_get_value(jobject);
-const int jni_descriptor_get_value_size(jobject);
-const int* jni_descriptor_read_value(jobject);
-void jni_descriptor_write_value(jobject, const int*, int);
+jobject jni_create_static_object (jclass, jmethodID);
+jobject jni_create_object (jobject, jmethodID);
+jobject jni_create_object_int (jobject, jmethodID, int);
+jobject jni_create_object_str (jobject, jmethodID, const char*);
+jobject jni_call_object (jobject, jmethodID);
+void jni_call_void (jobject, jmethodID);
+int jni_call_bool (jobject, jmethodID);
+int jni_call_int (jobject, jmethodID);
+void jni_set_value(jobject, jmethodID, const int*, int);
+const int* jni_get_value(jobject, jmethodID);
+const int* jni_call_int_array (jobject, jmethodID, jmethodID);
+const char* jni_call_str (jobject, jmethodID);
+const char** jni_call_str_array (jobject, jmethodID, jmethodID);
 
 #endif /* JNI_UTILS_H */

@@ -40,7 +40,7 @@ impl Service {
             Some(a) => Ok(a.to_string()),
             None => Err(Box::from("No uuid!")),
         };
-        unsafe { ffi::bluetooth_service_free_string(uuid) };
+        unsafe { ffi::jni_free_string(uuid) };
         res
     }
 
@@ -60,7 +60,7 @@ impl Service {
                 let c = c_ptr as i32;
                 v.push(c.to_string());
             }
-            ffi::bluetooth_service_free_int_array(characteristics);
+            ffi::jni_free_int_array(characteristics);
         }
         Ok(v)
     }

@@ -37,7 +37,13 @@ jni_free (void  *memory)
 }
 
 void
-jni_free_string_array (char **str_array)
+jni_free_string (char* string)
+{
+    jni_free (string);
+}
+
+void
+jni_free_string_array (char** str_array)
 {
     if (str_array)
     {
@@ -50,6 +56,12 @@ jni_free_string_array (char **str_array)
             i++;
         }
 
-    jni_free (str_array);
+        jni_free (str_array);
     }
+}
+
+void
+jni_free_int_array (int* array)
+{
+    jni_free (array);
 }

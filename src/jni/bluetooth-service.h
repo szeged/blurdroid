@@ -25,8 +25,6 @@ int bluetooth_service_get_gatt_characteristics_size (BluetoothService*);
 void bluetooth_service_inc_refcount (BluetoothService*);
 void bluetooth_service_dec_refcount (BluetoothService*);
 void bluetooth_service_free_service (BluetoothService*);
-void bluetooth_service_free_string (const char*);
-void bluetooth_service_free_int_array (int*);
 
 #ifdef __cplusplus
 }; /* extern "C" */

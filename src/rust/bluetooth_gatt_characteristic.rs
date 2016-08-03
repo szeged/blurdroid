@@ -41,7 +41,7 @@ impl Characteristic {
             Some(a) => Ok(a.to_string()),
             None => Err(Box::from("No uuid!")),
         };
-        unsafe { ffi::bluetooth_characteristic_free_string(uuid) };
+        unsafe { ffi::jni_free_string(uuid) };
         res
     }
 
@@ -55,7 +55,7 @@ impl Characteristic {
                 let d = d_ptr as i32;
                 v.push(d.to_string());
             }
-            ffi::bluetooth_characteristic_free_int_array(descriptors);
+            ffi::jni_free_int_array(descriptors);
         }
         Ok(v)
     }
@@ -70,7 +70,7 @@ impl Characteristic {
                 let val = (val_ptr as i32) as u8;
                 v.push(val);
             }
-            ffi::bluetooth_characteristic_free_int_array(values);
+            ffi::jni_free_int_array(values);
         }
         Ok(v)
     }
@@ -85,7 +85,7 @@ impl Characteristic {
                 let val = (val_ptr as i32) as u8;
                 v.push(val);
             }
-            ffi::bluetooth_characteristic_free_int_array(values);
+            ffi::jni_free_int_array(values);
         }
         Ok(v)
     }

@@ -28,8 +28,6 @@ int bluetooth_device_get_gatt_services_size (BluetoothDevice*);
 void bluetooth_device_inc_refcount (BluetoothDevice*);
 void bluetooth_device_dec_refcount (BluetoothDevice*);
 void bluetooth_device_free_device (BluetoothDevice*);
-void bluetooth_device_free_string (const char*);
-void bluetooth_device_free_int_array (int*);
 
 #ifdef __cplusplus
 }; /* extern "C" */

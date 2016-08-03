@@ -1,15 +1,22 @@
 #ifndef JNI_MEMORY_H
 #define JNI_MEMORY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 
-void* jni_malloc (size_t bytes);
-void* jni_calloc (size_t bytes);
+void* jni_malloc (size_t);
+void* jni_calloc (size_t);
 
-#define jni_new(type, count)  ((type*)jni_malloc (sizeof (type) * (count)))
-#define jni_new0(type, count) ((type*)jni_calloc (sizeof (type) * (count)))
+void jni_free (void*);
+void jni_free_string (char*);
+void jni_free_string_array (char**);
+void jni_free_int_array (int*);
 
-void jni_free (void  *memory);
-void jni_free_string_array (char **str_array);
+#ifdef __cplusplus
+}; /* extern "C" */
+#endif
 
 #endif /* JNI_MEMORY_H */

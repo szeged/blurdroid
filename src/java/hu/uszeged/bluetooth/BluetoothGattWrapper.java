@@ -2,15 +2,10 @@ package hu.uszeged.bluetooth;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattService;
-import android.util.Log;
-import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.UUID;
 
 final class BluetoothGattWrapper {
-    private static final String TAG = "BluetoothGattWrapper";
-
     private BluetoothGatt mGatt;
     private BluetoothDeviceWrapper mDevice;
 
@@ -45,9 +40,8 @@ final class BluetoothGattWrapper {
 
     public BluetoothGattServiceWrapper getService(String uuid) {
         for (BluetoothGattServiceWrapper service : mDevice.getServices()) {
-            if (service.getUuid() == uuid) {
-                return service;           
-            }
+            if (service.getUuid() == uuid)
+                return service;
         }
         return null;
     }
@@ -68,22 +62,18 @@ final class BluetoothGattWrapper {
     }
 
     public boolean readCharacteristic(BluetoothGattCharacteristicWrapper characteristic) {
-        return mGatt.readCharacteristic(
-            characteristic.get());
+        return mGatt.readCharacteristic(characteristic.get());
     }
 
     public boolean readDescriptor(BluetoothGattDescriptorWrapper descriptor) {
-        return mGatt.readDescriptor(
-            descriptor.get());
+        return mGatt.readDescriptor(descriptor.get());
     }
 
     public boolean writeCharacteristic(BluetoothGattCharacteristicWrapper characteristic) {
-        return mGatt.writeCharacteristic(
-            characteristic.get());
+        return mGatt.writeCharacteristic(characteristic.get());
     }
 
     public boolean writeDescriptor(BluetoothGattDescriptorWrapper descriptor) {
-        return mGatt.writeDescriptor(
-            descriptor.get());
+        return mGatt.writeDescriptor(descriptor.get());
     }
 }

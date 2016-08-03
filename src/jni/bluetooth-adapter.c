@@ -9,94 +9,66 @@
 BluetoothAdapter *
 bluetooth_adapter_get_adapter ()
 {
-    LOGI("bluetooth_adapter_get_adapter\n");
     BluetoothAdapter *adapter = jni_calloc (sizeof (*adapter));
 
-    adapter->adapter = jni_adapter_create_adapter();
+    adapter->adapter = jni_create_static_object (g_ctx.adapter_cls, g_ctx.adapter_get_adapter);
     adapter->count = 1;
-    LOGI("get_adapter d->d: %p\n", adapter->adapter);
     return adapter;
 }
 
 const char*
 bluetooth_adapter_get_address (BluetoothAdapter *adapter)
 {
-    LOGI("bluetooth_adapter_get_address a->a: %p\n", adapter->adapter);
-    return jni_adapter_get_address (adapter->adapter);
+    return jni_call_str (adapter->adapter, g_ctx.adapter_get_address);
 }
 
 const char*
 bluetooth_adapter_get_name (BluetoothAdapter *adapter)
 {
-    LOGI("bluetooth_adapter_get_name a->a: %p\n", adapter->adapter);
-    return jni_adapter_get_name (adapter->adapter);
+    return jni_call_str (adapter->adapter, g_ctx.adapter_get_name);
 }
 
 void
 bluetooth_adapter_start_discovery (BluetoothAdapter *adapter)
 {
-    LOGI("bluetooth_adapter_start_discovery a->a: %p\n", adapter->adapter);
-    jni_adapter_start_discovery (adapter->adapter);
+    jni_call_void (adapter->adapter, g_ctx.adapter_start_le_scan);
 }
 
 void
 bluetooth_adapter_stop_discovery (BluetoothAdapter *adapter)
 {
-    LOGI("bluetooth_adapter_stop_discovery a->a: %p\n", adapter->adapter);
-    jni_adapter_stop_discovery (adapter->adapter);
+    jni_call_void (adapter->adapter, g_ctx.adapter_stop_le_scan);
 }
 
 const char **
-bluetooth_adapter_get_devices(BluetoothAdapter *adapter)
+bluetooth_adapter_get_devices (BluetoothAdapter *adapter)
 {
-    LOGI("bluetooth_adapter_get_devices a->a: %p\n", adapter->adapter);
-    return jni_adapter_get_devices (adapter->adapter);
+    return jni_call_str_array (adapter->adapter, g_ctx.adapter_get_devices, g_ctx.device_get_address);
 }
 
 int
-bluetooth_adapter_get_devices_size(BluetoothAdapter *adapter)
+bluetooth_adapter_get_devices_size (BluetoothAdapter *adapter)
 {
-    LOGI("bluetooth_adapter_get_devices_size a->a: %p\n", adapter->adapter);
-    return jni_adapter_get_devices_size (adapter->adapter);
+    return jni_call_int (adapter->adapter, g_ctx.adapter_get_devices_size);
 }
 
 void
 bluetooth_adapter_inc_refcount (BluetoothAdapter *adapter)
 {
-    LOGI("bluetooth_adapter_get_devices_size a->a: %p\n", adapter->adapter);
     adapter->count = adapter->count + 1;
-    LOGI("bluetooth_adapter_inc_refcount a->rc: %d\n", adapter->count);
 }
 
 void
 bluetooth_adapter_dec_refcount (BluetoothAdapter *adapter)
 {
-    LOGI("bluetooth_adapter_dec_refcount a->a: %p\n", adapter->adapter);
     adapter->count = adapter->count - 1;
-    LOGI("bluetooth_adapter_dec_refcount a->rc: %d\n", adapter->count);
 }
 
 void
 bluetooth_adapter_free_adapter (BluetoothAdapter *adapter)
 {
-    LOGI("bluetooth_adapter_free_adapter a->a: %p\n", adapter->adapter);
-    LOGI("bluetooth_adapter_free_adapter a->rc: %d\n", adapter->count);
-    if (adapter->count <= 0) {
+    if (adapter->count <= 0)
+    {
         jni_free (adapter);
-        LOGI("adapter free!");
     }
-}
-
-void
-bluetooth_adapter_free_string (const char* string)
-{
-    LOGI("bluetooth_adapter_free_string %s\n", string);
-    jni_free ((char*)string);
-}
-
-void
-bluetooth_adapter_free_string_array (const char** array)
-{
-    LOGI("bluetooth_adapter_free_string_array\n");
-    jni_free_string_array ((char**)array);
 }

@@ -46,7 +46,7 @@ impl Device {
             Some(a) => Ok(a.to_string()),
             None => Err(Box::from("No name!")),
         };
-        unsafe { ffi::bluetooth_device_free_string(name) };
+        unsafe { ffi::jni_free_string(name) };
         res
     }
 
@@ -78,7 +78,7 @@ impl Device {
                 let s = s_ptr as i32;
                 v.push(s.to_string());
             }
-            ffi::bluetooth_device_free_int_array(services);
+            ffi::jni_free_int_array(services);
         }
         Ok(v)
     }

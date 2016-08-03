@@ -1,22 +1,16 @@
 package hu.uszeged.bluetooth;
 
-import android.bluetooth.BluetoothAdapter;
+import android.app.Application;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.content.Context;
-import android.util.Log;
-import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.HashMap;
 
 final class BluetoothDeviceWrapper {
-    private static final String TAG = "BluetoothDeviceWrapper";
-
     private BluetoothDevice mDevice;
     private BluetoothGattWrapper mGatt;
     private BluetoothGattCallbackWrapper mCallback;
@@ -53,7 +47,12 @@ final class BluetoothDeviceWrapper {
         mConnected = connected;
     }
 
-    public BluetoothGattWrapper connectGatt(Context context, boolean autoConnect) {
+    public static Application getApplicationUsingReflection() throws Exception {
+        return (Application) Class.forName("android.app.ActivityThread")
+            .getMethod("currentApplication").invoke(null, (Object[]) null);
+    }
+
+    public BluetoothGattWrapper connectGatt() {
         if (mGatt != null) {
             if (mConnected) {
                 mGatt.discoverServices();
@@ -62,10 +61,15 @@ final class BluetoothDeviceWrapper {
             }
             return mGatt;
         }
-        mGatt = BluetoothGattWrapper.create(
-            mDevice.connectGatt(context, /*autoConnect*/ false,
-                BluetoothGattCallbackWrapper.create(
-                    this)/*, BluetoothDevice.TRANSPORT_LE*/), this);
+        try {
+            Context ctx = getApplicationUsingReflection();
+            mGatt = BluetoothGattWrapper.create(
+                mDevice.connectGatt(ctx, /*autoConnect*/ false,
+                    BluetoothGattCallbackWrapper.create(
+                        this)/*, BluetoothDevice.TRANSPORT_LE*/), this);
+        } catch (final Exception e) {
+            mGatt = null;
+        }
         return mGatt;
     }
 
@@ -87,7 +91,7 @@ final class BluetoothDeviceWrapper {
 
     public void addService(BluetoothGattService service) {
         mServices.put(service.hashCode(),
-            BluetoothGattServiceWrapper.create(service, this, service.hashCode()));
+            BluetoothGattServiceWrapper.create(service, this));
     }
 
     public int getServicesSize() {
@@ -104,7 +108,7 @@ final class BluetoothDeviceWrapper {
 
     public void addCharacteristic(BluetoothGattCharacteristic characteristic) {
         mCharacteristics.put(characteristic.hashCode(),
-            BluetoothGattCharacteristicWrapper.create(characteristic, this, characteristic.hashCode()));
+            BluetoothGattCharacteristicWrapper.create(characteristic, this));
     }
 
     public int getCharacteristicsSize() {
@@ -121,7 +125,7 @@ final class BluetoothDeviceWrapper {
 
     public void addDescriptor(BluetoothGattDescriptor descriptor) {
         mDescriptors.put(descriptor.hashCode(),
-            BluetoothGattDescriptorWrapper.create(descriptor, this, descriptor.hashCode()));
+            BluetoothGattDescriptorWrapper.create(descriptor, this));
     }
 
     public int getDescriptorsSize() {

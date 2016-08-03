@@ -26,8 +26,6 @@ void bluetooth_descriptor_write_value (BluetoothDescriptor*, const int*, int);
 void bluetooth_descriptor_inc_refcount (BluetoothDescriptor*);
 void bluetooth_descriptor_dec_refcount (BluetoothDescriptor*);
 void bluetooth_descriptor_free_descriptor (BluetoothDescriptor*);
-void bluetooth_descriptor_free_string (const char*);
-void bluetooth_descriptor_free_int_array (int*);
 
 #ifdef __cplusplus
 }; /* extern "C" */

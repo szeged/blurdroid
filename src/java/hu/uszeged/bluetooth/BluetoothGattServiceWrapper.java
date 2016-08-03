@@ -2,28 +2,24 @@ package hu.uszeged.bluetooth;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
-import android.util.Log;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.UUID;
 
 final class BluetoothGattServiceWrapper {
-    private static final String TAG = "BluetoothGattServiceWrapper";
-
     private BluetoothGattService mService;
     private BluetoothDeviceWrapper mDevice;
     private int mId;
 
     public BluetoothGattServiceWrapper(BluetoothGattService service,
-        BluetoothDeviceWrapper device, int id) {
+            BluetoothDeviceWrapper device) {
         mService = service;
         mDevice = device;
-        mId = id;
+        mId = service.hashCode();
     }
 
     public static BluetoothGattServiceWrapper create(BluetoothGattService service,
-        BluetoothDeviceWrapper device, int id) {
-        return new BluetoothGattServiceWrapper(service, device, id);
+            BluetoothDeviceWrapper device) {
+        return new BluetoothGattServiceWrapper(service, device);
     }
 
     public BluetoothGattService get() {
@@ -59,9 +55,8 @@ final class BluetoothGattServiceWrapper {
 
     public BluetoothGattCharacteristicWrapper getCharacteristic(String uuid) {
         for (BluetoothGattCharacteristicWrapper characteristic : mDevice.getCharacteristics()) {
-            if (characteristic.getUuid() == uuid) {
-                return characteristic;           
-            }
+            if (characteristic.getUuid() == uuid)
+                return characteristic;
         }
         return null;
     }
@@ -78,7 +73,7 @@ final class BluetoothGattServiceWrapper {
         Set<BluetoothGattServiceWrapper> result
             = new HashSet<BluetoothGattServiceWrapper>();
         for (BluetoothGattService service : mService.getIncludedServices()) {
-            result.add(BluetoothGattServiceWrapper.create(service, mDevice, service.hashCode()));
+            result.add(BluetoothGattServiceWrapper.create(service, mDevice));
         }
         return result;
     }

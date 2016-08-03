@@ -2,29 +2,24 @@ package hu.uszeged.bluetooth;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
-import android.util.Log;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.UUID;
 
 final class BluetoothGattCharacteristicWrapper {
-    private static final String TAG = "BluetoothGattCharacteristicWrapper";
-
     private BluetoothGattCharacteristic mCharacteristic;
     private BluetoothDeviceWrapper mDevice;
     private int mId;
 
     public BluetoothGattCharacteristicWrapper(BluetoothGattCharacteristic characteristic,
-        BluetoothDeviceWrapper device, int id) {
+            BluetoothDeviceWrapper device) {
         mCharacteristic = characteristic;
         mDevice = device;
-        mId = id;
+        mId = characteristic.hashCode();
     }
 
     public static BluetoothGattCharacteristicWrapper create(BluetoothGattCharacteristic characteristic,
-        BluetoothDeviceWrapper device, int id) {
-        return new BluetoothGattCharacteristicWrapper(characteristic, device, id);
+            BluetoothDeviceWrapper device) {
+        return new BluetoothGattCharacteristicWrapper(characteristic, device);
     }
 
     public BluetoothGattCharacteristic get() {
@@ -52,9 +47,8 @@ final class BluetoothGattCharacteristicWrapper {
 
     public BluetoothGattDescriptorWrapper getDescriptor(String uuid) {
         for (BluetoothGattDescriptorWrapper descriptor : mDevice.getDescriptors()) {
-            if (descriptor.getUuid() == uuid) {
-                return descriptor;           
-            }
+            if (descriptor.getUuid() == uuid)
+                return descriptor;
         }
         return null;
     }
@@ -69,9 +63,9 @@ final class BluetoothGattCharacteristicWrapper {
 
     public int[] getValue() {
         byte[] values = mCharacteristic.getValue();
-        if (values == null) {
+        if (values == null)
             return null;
-        }
+
         int[] intArray = new int[values.length];
         for(int i = 0, k = 0; i < values.length; i++) {
             intArray[i] = values[i] & (0xff);

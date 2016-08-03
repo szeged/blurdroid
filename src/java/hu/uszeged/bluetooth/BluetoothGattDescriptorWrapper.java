@@ -1,28 +1,24 @@
 package hu.uszeged.bluetooth;
 
 import android.bluetooth.BluetoothGattDescriptor;
-import android.util.Log;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
 
 final class BluetoothGattDescriptorWrapper {
-    private static final String TAG = "BluetoothGattDescriptorWrapper";
-
     private BluetoothGattDescriptor mDescriptor;
     private BluetoothDeviceWrapper mDevice;
     private int mId;
 
     public BluetoothGattDescriptorWrapper(BluetoothGattDescriptor descriptor,
-        BluetoothDeviceWrapper device, int id) {
+            BluetoothDeviceWrapper device) {
         mDescriptor = descriptor;
         mDevice = device;
-        mId = id;
+        mId = descriptor.hashCode();
     }
 
     public static BluetoothGattDescriptorWrapper create(BluetoothGattDescriptor descriptor,
-        BluetoothDeviceWrapper device, int id) {
-        return new BluetoothGattDescriptorWrapper(descriptor, device, id);
+            BluetoothDeviceWrapper device) {
+        return new BluetoothGattDescriptorWrapper(descriptor, device);
     }
 
     public BluetoothGattDescriptor get() {
@@ -39,9 +35,9 @@ final class BluetoothGattDescriptorWrapper {
 
     public int[] getValue() {
         byte[] values = mDescriptor.getValue();
-        if (values == null) {
+        if (values == null)
             return null;
-        }
+
         int[] intArray = new int[values.length];
         for(int i = 0, k = 0; i < values.length; i++) {
             intArray[i] = values[i] & (0xff);

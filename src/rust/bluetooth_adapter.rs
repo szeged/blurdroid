@@ -43,7 +43,7 @@ impl Adapter {
             Some(a) => Ok(a.to_string()),
             None => Err(Box::from("No address!")),
         };
-        unsafe { ffi::bluetooth_adapter_free_string(address) };
+        unsafe { ffi::jni_free_string(address) };
         res
     }
 
@@ -53,7 +53,7 @@ impl Adapter {
             Some(a) => Ok(a.to_string()),
             None => Err(Box::from("No name!")),
         };
-        unsafe { ffi::bluetooth_adapter_free_string(name) };
+        unsafe { ffi::jni_free_string(name) };
         res
     }
 
@@ -70,7 +70,7 @@ impl Adapter {
                 };
                 v.push(d.clone());
             }
-            ffi::bluetooth_adapter_free_string_array(devices);
+            ffi::jni_free_string_array(devices);
         }
         Ok(v)
     }

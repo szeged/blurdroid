@@ -1,15 +1,11 @@
 package hu.uszeged.bluetooth;
 
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.util.Log;
 
 final class BluetoothGattCallbackWrapper extends BluetoothGattCallback {
-    private static final String TAG = "BluetoothGattCallbackWrapper";
-
     private BluetoothDeviceWrapper mDevice;
 
     public BluetoothGattCallbackWrapper(BluetoothDeviceWrapper device) {
@@ -23,31 +19,32 @@ final class BluetoothGattCallbackWrapper extends BluetoothGattCallback {
 
     @Override
     public void onCharacteristicChanged(
-            BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
     }
 
     @Override
     public void onCharacteristicRead(
-            BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
     }
 
     @Override
     public void onCharacteristicWrite(
-            BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
     }
 
     @Override
     public void onDescriptorRead(
-            BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+        BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
     }
 
     @Override
     public void onDescriptorWrite(
-            BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+        BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
     }
 
     @Override
-    public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+    public void onConnectionStateChange(
+            BluetoothGatt gatt, int status, int newState) {
         mDevice.setConnected(newState == BluetoothGatt.STATE_CONNECTED);
         if (status == BluetoothGatt.GATT_SUCCESS) {
             if (newState == BluetoothGatt.STATE_CONNECTED) {
@@ -57,6 +54,7 @@ final class BluetoothGattCallbackWrapper extends BluetoothGattCallback {
     }
 
     @Override
-    public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+    public void onServicesDiscovered(
+        BluetoothGatt gatt, int status) {
     }
 }

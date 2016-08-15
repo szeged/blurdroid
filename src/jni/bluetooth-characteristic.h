@@ -19,6 +19,8 @@ struct BluetoothCharacteristic
 BluetoothCharacteristic* bluetooth_characteristic_create_characteristic (BluetoothService*, int);
 
 const char* bluetooth_characteristic_get_uuid (BluetoothCharacteristic*);
+const char** bluetooth_characteristic_get_flags (BluetoothCharacteristic*);
+int bluetooth_characteristic_get_flags_size (BluetoothCharacteristic*);
 const int* bluetooth_characteristic_get_gatt_descriptors (BluetoothCharacteristic*);
 int bluetooth_characteristic_get_gatt_descriptors_size (BluetoothCharacteristic*);
 const int* bluetooth_characteristic_get_value (BluetoothCharacteristic*);

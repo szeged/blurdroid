@@ -86,6 +86,26 @@ jni_init (JNIEnv *env)
                              "getName",
                              "()Ljava/lang/String;");
 
+    g_ctx.device_get_uuids =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getUuids",
+                             "()Ljava/util/Set;");
+
+    g_ctx.device_get_uuids_size =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getUuidsSize",
+                             "()I");
+
+    g_ctx.device_get_rssi =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getRssi",
+                             "()I");
+
+    g_ctx.device_get_tx_power =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getTxPower",
+                             "()I");
+
     g_ctx.device_is_connected =
         (*env)->GetMethodID (env, g_ctx.device_cls,
                              "isConnected",
@@ -175,6 +195,16 @@ jni_init (JNIEnv *env)
         (*env)->GetMethodID (env, g_ctx.characteristic_cls,
                              "getUuid",
                              "()Ljava/lang/String;");
+
+    g_ctx.characteristic_get_flags =
+        (*env)->GetMethodID (env, g_ctx.characteristic_cls,
+                             "getFlags",
+                             "()Ljava/util/Set;");
+
+    g_ctx.characteristic_get_flags_size =
+        (*env)->GetMethodID (env, g_ctx.characteristic_cls,
+                             "getFlagsSize",
+                             "()I");
 
     g_ctx.characteristic_get_gatt_descriptor =
         (*env)->GetMethodID (env, g_ctx.characteristic_cls,
@@ -277,6 +307,8 @@ jni_init (JNIEnv *env)
         (*env)->GetMethodID (env, g_ctx.iterator_cls,
                              "next",
                              "()Ljava/lang/Object;");
+
+    g_ctx.null = NULL;
 }
 
 jint
@@ -456,7 +488,6 @@ jni_call_str_array (jobject jobj, jmethodID mid1, jmethodID mid2)
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
         return NULL;
-
     jobject set = (jobject)
         (*env)->CallObjectMethod (env, jobj, mid1);
     jobject iter = (*env)->CallObjectMethod (env, set, g_ctx.set_iterator);
@@ -468,20 +499,26 @@ jni_call_str_array (jobject jobj, jmethodID mid1, jmethodID mid2)
     size_t i = 0;
     for ( i = 0; i < setSize; i++ )
     {
-        arr[i] = (char*) calloc (20, sizeof (char));
+        arr[i] = (char*) calloc (40, sizeof (char));
     }
 
     i = 0;
     while ((*env)->CallBooleanMethod (env, iter, g_ctx.iterator_has_next))
     {
         jobject obj = (*env)->CallObjectMethod (env, iter, g_ctx.iterator_next);
-        jstring jstr = (jstring)
-            (*env)->CallObjectMethod (env, obj, mid2);
+        jstring jstr;
+        if (mid2) {
+            jstr = (jstring)
+                (*env)->CallObjectMethod (env, obj, mid2);
+        } else {
+            jstr = (jstring) obj;
+        }
         const char* str = (*env)->GetStringUTFChars (env, jstr, NULL);
         arr[i++] = str;
         //(*env)->ReleaseStringUTFChars(env, jstr, str);
         (*env)->DeleteLocalRef (env, obj);
-        (*env)->DeleteLocalRef (env, jstr);
+        if (mid2)
+            (*env)->DeleteLocalRef (env, jstr);
     }
 
     return arr;

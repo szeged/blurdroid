@@ -23,6 +23,18 @@ bluetooth_characteristic_get_uuid (BluetoothCharacteristic *characteristic)
     return jni_call_str (characteristic->characteristic, g_ctx.characteristic_get_uuid);
 }
 
+const char**
+bluetooth_characteristic_get_flags (BluetoothCharacteristic *characteristic)
+{
+    return jni_call_str_array (characteristic->characteristic, g_ctx.characteristic_get_flags, g_ctx.null);
+}
+
+int
+bluetooth_characteristic_get_flags_size (BluetoothCharacteristic *characteristic)
+{
+    return jni_call_int (characteristic->characteristic, g_ctx.characteristic_get_flags_size);
+}
+
 const int*
 bluetooth_characteristic_get_gatt_descriptors (BluetoothCharacteristic *characteristic)
 {

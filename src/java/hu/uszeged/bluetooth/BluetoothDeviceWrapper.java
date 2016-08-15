@@ -6,9 +6,16 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.content.Context;
+import android.os.ParcelUuid;
+import android.util.Log;
+import java.io.StringWriter;
+import java.io.PrintWriter;
+import java.util.UUID;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 final class BluetoothDeviceWrapper {
     private BluetoothDevice mDevice;
@@ -17,18 +24,25 @@ final class BluetoothDeviceWrapper {
     private HashMap<Integer, BluetoothGattServiceWrapper> mServices;
     private HashMap<Integer, BluetoothGattCharacteristicWrapper> mCharacteristics;
     private HashMap<Integer, BluetoothGattDescriptorWrapper> mDescriptors;
+    private int mRssi;
+    private ScanRecord mScanRecord;
+    private Set<String> mUuids;
     private boolean mConnected;
 
-    public BluetoothDeviceWrapper(BluetoothDevice device) {
+    public BluetoothDeviceWrapper(BluetoothDevice device, int rssi, byte[] scanRecord) {
         mDevice = device;
+        mRssi = rssi;
+        mScanRecord = ScanRecord.parseFromBytes(scanRecord);
         mServices = new HashMap<Integer, BluetoothGattServiceWrapper>();
         mCharacteristics = new HashMap<Integer, BluetoothGattCharacteristicWrapper>();
         mDescriptors = new HashMap<Integer, BluetoothGattDescriptorWrapper>();
+        mUuids = new HashSet<String>();
         mConnected = false;
+        initUuids();
     }
 
-    public static BluetoothDeviceWrapper create(BluetoothDevice device) {
-        return new BluetoothDeviceWrapper(device);
+    public static BluetoothDeviceWrapper create(BluetoothDevice device, int rssi, byte[] scanRecord) {
+        return new BluetoothDeviceWrapper(device, rssi, scanRecord);
     }
 
     public String getAddress() {
@@ -36,7 +50,26 @@ final class BluetoothDeviceWrapper {
     }
 
     public String getName() {
-        return mDevice.getName();
+        String name = mDevice.getName();
+        if (name == null)
+            name = mScanRecord.getDeviceName();
+        return name;
+    }
+
+    public Set<String> getUuids() {
+        return mUuids;
+    }
+
+    public int getUuidsSize() {
+        return mUuids.size();
+    }
+
+    public int getRssi() {
+        return mRssi;
+    }
+
+    public int getTxPower() {
+        return mScanRecord.getTxPowerLevel();
     }
 
     public boolean isConnected() {
@@ -130,5 +163,14 @@ final class BluetoothDeviceWrapper {
 
     public int getDescriptorsSize() {
         return mServices.values().size();
+    }
+
+    private void initUuids() {
+        List<ParcelUuid> uuids = mScanRecord.getServiceUuids();
+        if (uuids == null)
+            return;
+        for (ParcelUuid uuid : mScanRecord.getServiceUuids()) {
+            mUuids.add(uuid.getUuid().toString());
+        }
     }
 }

@@ -83,19 +83,43 @@ impl Device {
         Ok(v)
     }
 
-    pub fn get_icon(&self) -> Result<String, Box<Error>> {
-        Err(Box::from(utils::NOT_SUPPORTED_ERROR))
+    pub fn get_uuids(&self) -> Result<Vec<String>, Box<Error>> {
+        let mut v = vec!();
+        unsafe {
+            let uuids = ffi::bluetooth_device_get_uuids(self.device());
+            let max = ffi::bluetooth_device_get_uuids_size(self.device()) as isize;
+            for i in 0..max {
+                let u_ptr = *uuids.offset(i);
+                let u = match utils::c_str_to_slice(&u_ptr) {
+                    None => continue,
+                    Some(uuid) => uuid.to_owned(),
+                };
+                v.push(u.clone());
+            }
+            ffi::jni_free_string_array(uuids);
+        }
+        Ok(v)
     }
 
-    pub fn get_class(&self) -> Result<u32, Box<Error>> {
-        Err(Box::from(utils::NOT_SUPPORTED_ERROR))
+    pub fn get_rssi(&self) -> Result<i16, Box<Error>> {
+        let rssi = unsafe { ffi::bluetooth_device_get_rssi(self.device()) as i32 };
+        Ok(rssi as i16)
+    }
+
+    pub fn get_tx_power(&self) -> Result<i16, Box<Error>> {
+        let tx_power = unsafe { ffi::bluetooth_device_get_tx_power(self.device()) as i32 };
+        Ok(tx_power as i16)
     }
 
     pub fn get_appearance(&self) -> Result<u16, Box<Error>> {
         Err(Box::from(utils::NOT_SUPPORTED_ERROR))
     }
 
-    pub fn get_uuids(&self) -> Result<Vec<String>, Box<Error>> {
+    pub fn get_icon(&self) -> Result<String, Box<Error>> {
+        Err(Box::from(utils::NOT_SUPPORTED_ERROR))
+    }
+
+    pub fn get_class(&self) -> Result<u32, Box<Error>> {
         Err(Box::from(utils::NOT_SUPPORTED_ERROR))
     }
 
@@ -140,14 +164,6 @@ impl Device {
     }
 
     pub fn get_modalias(&self) -> Result<(String, u32, u32, u32), Box<Error>> {
-        Err(Box::from(utils::NOT_SUPPORTED_ERROR))
-    }
-
-    pub fn get_rssi(&self) -> Result<i16, Box<Error>> {
-        Err(Box::from(utils::NOT_SUPPORTED_ERROR))
-    }
-
-    pub fn get_tx_power(&self) -> Result<i16, Box<Error>> {
         Err(Box::from(utils::NOT_SUPPORTED_ERROR))
     }
 

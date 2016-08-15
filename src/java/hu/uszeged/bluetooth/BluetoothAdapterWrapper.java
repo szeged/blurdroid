@@ -32,16 +32,9 @@ final class BluetoothAdapterWrapper {
         return new HashSet<BluetoothDeviceWrapper>(mDevices.values());
     }
 
-    public Set<BluetoothDeviceWrapper> getBondedDevices() {
-        for (BluetoothDevice device : mAdapter.getBondedDevices()) {
-            addDevice(device);
-        }
-        return getDevices();
-    }
-
-    public void addDevice(BluetoothDevice device) {
+    public void addDevice(BluetoothDevice device, int rssi, byte[] scanRecord) {
         if (!mDevices.containsKey(device.getAddress()))
-            mDevices.put(device.getAddress(), BluetoothDeviceWrapper.create(device));
+            mDevices.put(device.getAddress(), BluetoothDeviceWrapper.create(device, rssi, scanRecord));
     }
 
     public int getDevicesSize() {
@@ -76,7 +69,7 @@ final class BluetoothAdapterWrapper {
             new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
-            addDevice(device);
+            addDevice(device, rssi, scanRecord);
         }
     };
 }

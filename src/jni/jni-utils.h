@@ -32,6 +32,10 @@ typedef struct {
     jclass device_cls;
     jmethodID device_get_address;
     jmethodID device_get_name;
+    jmethodID device_get_uuids;
+    jmethodID device_get_uuids_size;
+    jmethodID device_get_rssi;
+    jmethodID device_get_tx_power;
     jmethodID device_connect_gatt;
     jmethodID device_disconnect;
     jmethodID device_is_connected;
@@ -59,6 +63,8 @@ typedef struct {
     jclass characteristic_cls;
     jmethodID characteristic_get_id;
     jmethodID characteristic_get_uuid;
+    jmethodID characteristic_get_flags;
+    jmethodID characteristic_get_flags_size;
     //jmethodID characteristic_get_instance_id;
     jmethodID characteristic_get_gatt_descriptors;
     jmethodID characteristic_get_gatt_descriptor;
@@ -82,6 +88,7 @@ typedef struct {
     jclass iterator_cls;
     jmethodID iterator_has_next;
     jmethodID iterator_next;
+    jmethodID null;
 } BTContext;
 
 BTContext g_ctx;

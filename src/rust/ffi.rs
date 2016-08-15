@@ -22,6 +22,10 @@ extern {
     pub fn bluetooth_device_create_device(adapter: *mut BluetoothAdapter, address: *const c_char) -> *mut BluetoothDevice;
     //pub fn bluetooth_device_get_address(device: *mut BluetoothDevice) -> *const c_char;
     pub fn bluetooth_device_get_name(device: *mut BluetoothDevice) -> *const c_char;
+    pub fn bluetooth_device_get_uuids (device: *mut BluetoothDevice) -> *const *const c_char;
+    pub fn bluetooth_device_get_uuids_size (device: *mut BluetoothDevice) -> c_int;
+    pub fn bluetooth_device_get_rssi (device: *mut BluetoothDevice) -> c_int;
+    pub fn bluetooth_device_get_tx_power (device: *mut BluetoothDevice) -> c_int;
     pub fn bluetooth_device_connect_gatt(device: *mut BluetoothDevice);
     pub fn bluetooth_device_disconnect(device: *mut BluetoothDevice);
     pub fn bluetooth_device_is_connected(device: *mut BluetoothDevice) -> c_int;
@@ -42,6 +46,8 @@ extern {
 
     pub fn bluetooth_characteristic_create_characteristic(service: *mut BluetoothService, id: c_int) -> *mut BluetoothCharacteristic;
     pub fn bluetooth_characteristic_get_uuid(characteristic: *mut BluetoothCharacteristic) -> *const c_char;
+    pub fn bluetooth_characteristic_get_flags (characteristic: *mut BluetoothCharacteristic) -> *const *const c_char;
+    pub fn bluetooth_characteristic_get_flags_size (characteristic: *mut BluetoothCharacteristic) -> c_int;
     pub fn bluetooth_characteristic_get_gatt_descriptors(characteristic: *mut BluetoothCharacteristic) -> *const c_int;
     pub fn bluetooth_characteristic_get_gatt_descriptors_size(characteristic: *mut BluetoothCharacteristic) -> c_int;
     pub fn bluetooth_characteristic_get_value(characteristic: *mut BluetoothCharacteristic) -> *const c_int;

@@ -98,11 +98,25 @@ impl Characteristic {
         Ok(())
     }
 
-    pub fn is_notifying(&self) -> Result<bool, Box<Error>> {
-        Err(Box::from(utils::NOT_SUPPORTED_ERROR))
+    pub fn get_flags(&self) -> Result<Vec<String>, Box<Error>> {
+        let mut v = vec!();
+        unsafe {
+            let flags = ffi::bluetooth_characteristic_get_flags(self.characteristic());
+            let max = ffi::bluetooth_characteristic_get_flags_size(self.characteristic()) as isize;
+            for i in 0..max {
+                let f_ptr = *flags.offset(i);
+                let f = match utils::c_str_to_slice(&f_ptr) {
+                    None => continue,
+                    Some(flag) => flag.to_owned(),
+                };
+                v.push(f.clone());
+            }
+            ffi::jni_free_string_array(flags);
+        }
+        Ok(v)
     }
 
-    pub fn get_flags(&self) -> Result<Vec<String>, Box<Error>> {
+    pub fn is_notifying(&self) -> Result<bool, Box<Error>> {
         Err(Box::from(utils::NOT_SUPPORTED_ERROR))
     }
 

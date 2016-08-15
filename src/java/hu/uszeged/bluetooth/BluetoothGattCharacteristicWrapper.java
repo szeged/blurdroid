@@ -8,13 +8,16 @@ import java.util.HashSet;
 final class BluetoothGattCharacteristicWrapper {
     private BluetoothGattCharacteristic mCharacteristic;
     private BluetoothDeviceWrapper mDevice;
+    private Set<String> mFlags;
     private int mId;
 
     public BluetoothGattCharacteristicWrapper(BluetoothGattCharacteristic characteristic,
             BluetoothDeviceWrapper device) {
         mCharacteristic = characteristic;
         mDevice = device;
+        mFlags = new HashSet<String>();
         mId = characteristic.hashCode();
+        initFlags();
     }
 
     public static BluetoothGattCharacteristicWrapper create(BluetoothGattCharacteristic characteristic,
@@ -36,6 +39,14 @@ final class BluetoothGattCharacteristicWrapper {
 
     public int getInstanceId() {
         return mCharacteristic.getInstanceId();
+    }
+
+    public Set<String> getFlags() {
+        return mFlags;
+    }
+
+    public int getFlagsSize() {
+        return mFlags.size();
     }
 
     public Set<BluetoothGattDescriptorWrapper> getDescriptors() {
@@ -96,5 +107,30 @@ final class BluetoothGattCharacteristicWrapper {
     public void writeValue(int[] values) {
         setValue(values);
         mDevice.getGatt().writeCharacteristic(this);
+    }
+
+    private void initFlags() {
+        int flag = mCharacteristic.getProperties();
+        if ((flag & BluetoothGattCharacteristic.PROPERTY_BROADCAST) > 0) {
+            mFlags.add("broadcast");
+        }
+        if ((flag & BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+            mFlags.add("read");
+        }
+        if ((flag & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) > 0) {
+            mFlags.add("write_without_response");
+        }
+        if ((flag & BluetoothGattCharacteristic.PROPERTY_WRITE) > 0) {
+            mFlags.add("write");
+        }
+        if ((flag & BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+            mFlags.add("notify");
+        }
+        if ((flag & BluetoothGattCharacteristic.PROPERTY_INDICATE) > 0) {
+            mFlags.add("indicate");
+        }
+        if ((flag & BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE) > 0) {
+            mFlags.add("authenticated_signed_writes");
+        }
     }
 }

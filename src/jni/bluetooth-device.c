@@ -29,6 +29,30 @@ bluetooth_device_get_name (BluetoothDevice *device)
     return jni_call_str (device->device, g_ctx.device_get_name);
 }
 
+const char**
+bluetooth_device_get_uuids (BluetoothDevice *device)
+{
+    return jni_call_str_array (device->device, g_ctx.device_get_uuids, g_ctx.null);
+}
+
+int
+bluetooth_device_get_uuids_size (BluetoothDevice *device)
+{
+    return jni_call_int (device->device, g_ctx.device_get_uuids_size);
+}
+
+int
+bluetooth_device_get_rssi (BluetoothDevice *device)
+{
+    return jni_call_int (device->device, g_ctx.device_get_rssi);
+}
+
+int
+bluetooth_device_get_tx_power (BluetoothDevice *device)
+{
+    return jni_call_int (device->device, g_ctx.device_get_tx_power);
+}
+
 void
 bluetooth_device_connect_gatt (BluetoothDevice *device)
 {

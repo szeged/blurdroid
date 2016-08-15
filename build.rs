@@ -5,10 +5,11 @@ use std::process::{Command, Stdio};
 use std::fs;
 
 fn main() {
-    // build.rs is not platform-specific, so we have to check the target here.
     let target = env::var("TARGET").unwrap();
     if target.contains("android") {
         android_main()
+    } else {
+        println!("Android target supported only");
     }
 }
 

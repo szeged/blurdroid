@@ -59,16 +59,16 @@ bluetooth_characteristic_get_value_size (BluetoothCharacteristic *characteristic
     return jni_call_int (characteristic->characteristic, g_ctx.characteristic_get_value_size);
 }
 
-const int*
+int
 bluetooth_characteristic_read_value (BluetoothCharacteristic *characteristic)
 {
-    return jni_get_value (characteristic->characteristic, g_ctx.characteristic_read_value);
+    return jni_call_bool (characteristic->characteristic, g_ctx.characteristic_read_value);
 }
 
-void
+int
 bluetooth_characteristic_write_value (BluetoothCharacteristic *characteristic, const int* values, int length)
 {
-    jni_set_value (characteristic->characteristic, g_ctx.characteristic_write_value, values, length);
+    return jni_set_value (characteristic->characteristic, g_ctx.characteristic_write_value, values, length);
 }
 
 void
@@ -87,6 +87,7 @@ void
 bluetooth_characteristic_free_characteristic (BluetoothCharacteristic *characteristic) {
     if (characteristic->count <= 0)
     {
+        jni_delete_object(characteristic->characteristic);
         jni_free (characteristic);
     }
 }

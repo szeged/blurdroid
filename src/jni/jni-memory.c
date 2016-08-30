@@ -43,19 +43,15 @@ jni_free_string (char* string)
 }
 
 void
-jni_free_string_array (char** str_array)
+jni_free_string_array (char** str_array, int length)
 {
     if (str_array)
     {
         int i;
-
-        i = 0;
-        while (str_array[i])
+        for (i = 0; i < length; i++)
         {
             jni_free (str_array[i]);
-            i++;
         }
-
         jni_free (str_array);
     }
 }

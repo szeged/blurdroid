@@ -68,9 +68,12 @@ impl Adapter {
                     None => continue,
                     Some(dev) => dev.to_owned(),
                 };
+                println!("#### device list {:?} {:?} {:?}", d, d.as_ptr(), d_ptr);
                 v.push(d.clone());
             }
-            ffi::jni_free_string_array(devices);
+            if max > 0 {
+                ffi::jni_free_string_array(devices, max as i32);
+            }
         }
         Ok(v)
     }

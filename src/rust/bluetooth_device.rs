@@ -1,7 +1,8 @@
 use ffi;
 use std::cell::Cell;
 use std::error::Error;
-use std::os::raw::{c_char};
+use std::os::raw::{c_char, c_int};
+use std::ptr::{self};
 use std::sync::Arc;
 use utils;
 
@@ -25,7 +26,8 @@ impl Device {
     }
 
     pub fn new(adapter: Arc<Adapter>, address: String) -> Device {
-        let device = unsafe { ffi::bluetooth_device_create_device(adapter.adapter(), address.as_ptr() as *const c_char) };
+        println!("#### device new {:?} {:?} {:?}", address, address.as_ptr(), address.len());
+        let device = unsafe { ffi::bluetooth_device_create_device(adapter.adapter(), address.as_ptr() as *const c_char, address.len() as c_int) };
         Device {
             i: Box::new(IDevice { device: Cell::new(device) }),
             address: address,
@@ -78,7 +80,9 @@ impl Device {
                 let s = s_ptr as i32;
                 v.push(s.to_string());
             }
-            ffi::jni_free_int_array(services);
+            if max > 0 {
+                ffi::jni_free_int_array(services);
+            }
         }
         Ok(v)
     }
@@ -94,9 +98,13 @@ impl Device {
                     None => continue,
                     Some(uuid) => uuid.to_owned(),
                 };
+                println!("##### {:?}", u);
                 v.push(u.clone());
             }
-            ffi::jni_free_string_array(uuids);
+            println!("#### {:?}", v);
+            if max > 0 {
+                ffi::jni_free_string_array(uuids, max as i32);
+            }
         }
         Ok(v)
     }

@@ -35,16 +35,16 @@ bluetooth_descriptor_get_value_size (BluetoothDescriptor *descriptor)
     return jni_call_int (descriptor->descriptor, g_ctx.descriptor_get_value_size);
 }
 
-const int*
+int
 bluetooth_descriptor_read_value (BluetoothDescriptor *descriptor)
 {
-    return jni_get_value (descriptor->descriptor, g_ctx.descriptor_read_value);
+    return jni_call_bool (descriptor->descriptor, g_ctx.descriptor_read_value);
 }
 
-void
+int
 bluetooth_descriptor_write_value (BluetoothDescriptor *descriptor, const int* values, int length)
 {
-    jni_set_value (descriptor->descriptor, g_ctx.descriptor_write_value, values, length);
+    return jni_set_value (descriptor->descriptor, g_ctx.descriptor_write_value, values, length);
 }
 
 void

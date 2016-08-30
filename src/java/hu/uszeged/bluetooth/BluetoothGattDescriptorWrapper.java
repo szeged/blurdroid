@@ -39,7 +39,7 @@ final class BluetoothGattDescriptorWrapper {
             return null;
 
         int[] intArray = new int[values.length];
-        for(int i = 0, k = 0; i < values.length; i++) {
+        for(int i = 0; i < values.length; i++) {
             intArray[i] = values[i] & (0xff);
         }
         return intArray;
@@ -54,19 +54,20 @@ final class BluetoothGattDescriptorWrapper {
         // The values type is int,
         // but only containt u8 values from rust
         byte[] byteArray = new byte[values.length];
-        for(int i = 0, k = 0; i < values.length; i++) {
+        for(int i = 0; i < values.length; i++) {
             byteArray[i] = (byte) values[i];
         }
         return mDescriptor.setValue(byteArray);
     }
 
-    public int[] readValue() {
-        mDevice.getGatt().readDescriptor(this);
-        return getValue();
+    public boolean readValue() {
+        return mDevice.getGatt().readDescriptor(this);
     }
 
-    public void writeValue(int[] values) {
-        setValue(values);
-        mDevice.getGatt().writeDescriptor(this);
+    public boolean writeValue(int[] values) {
+        // if we are not connected, we shouldn't change the "local" value
+        if (!mDevice.isConnected())
+            return false;
+        return setValue(values) && mDevice.getGatt().writeDescriptor(this);
     }
 }

@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattService;
 import java.util.Set;
 import java.util.HashSet;
+import android.util.Log;
 
 final class BluetoothGattWrapper {
     private BluetoothGatt mGatt;
@@ -62,18 +63,22 @@ final class BluetoothGattWrapper {
     }
 
     public boolean readCharacteristic(BluetoothGattCharacteristicWrapper characteristic) {
-        return mGatt.readCharacteristic(characteristic.get());
+        return !mDevice.isConnected() ? false :
+            mGatt.readCharacteristic(characteristic.get());
     }
 
     public boolean readDescriptor(BluetoothGattDescriptorWrapper descriptor) {
-        return mGatt.readDescriptor(descriptor.get());
+        return !mDevice.isConnected() ? false :
+            mGatt.readDescriptor(descriptor.get());
     }
 
     public boolean writeCharacteristic(BluetoothGattCharacteristicWrapper characteristic) {
-        return mGatt.writeCharacteristic(characteristic.get());
+        return !mDevice.isConnected() ? false :
+            mGatt.writeCharacteristic(characteristic.get());
     }
 
     public boolean writeDescriptor(BluetoothGattDescriptorWrapper descriptor) {
-        return mGatt.writeDescriptor(descriptor.get());
+        return !mDevice.isConnected() ? false :
+            mGatt.writeDescriptor(descriptor.get());
     }
 }

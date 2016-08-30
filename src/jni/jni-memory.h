@@ -12,7 +12,7 @@ void* jni_calloc (size_t);
 
 void jni_free (void*);
 void jni_free_string (char*);
-void jni_free_string_array (char**);
+void jni_free_string_array (char**, int);
 void jni_free_int_array (int*);
 
 #ifdef __cplusplus

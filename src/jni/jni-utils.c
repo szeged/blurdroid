@@ -235,12 +235,12 @@ jni_init (JNIEnv *env)
     g_ctx.characteristic_read_value =
         (*env)->GetMethodID (env, g_ctx.characteristic_cls,
                              "readValue",
-                             "()[I");
+                             "()Z");
 
     g_ctx.characteristic_write_value =
         (*env)->GetMethodID (env, g_ctx.characteristic_cls,
                              "writeValue",
-                             "([I)V");
+                             "([I)Z");
 
     jclass classBtdsc =
         (*env)->FindClass (env, "hu/uszeged/bluetooth/BluetoothGattDescriptorWrapper");
@@ -271,12 +271,12 @@ jni_init (JNIEnv *env)
     g_ctx.descriptor_read_value =
         (*env)->GetMethodID (env, g_ctx.descriptor_cls,
                              "readValue",
-                             "()[I");
+                             "()Z");
 
     g_ctx.descriptor_write_value =
         (*env)->GetMethodID (env, g_ctx.descriptor_cls,
                              "writeValue",
-                             "([I)V");
+                             "([I)Z");
 
     jclass classSet =
         (*env)->FindClass (env, "java/util/Set");
@@ -369,17 +369,27 @@ jni_create_object_int (jobject jobj, jmethodID mid, int i)
 }
 
 jobject
-jni_create_object_str (jobject jobj, jmethodID mid, const char* str)
+jni_create_object_str (jobject jobj, jmethodID mid, const char* str, int length)
 {
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
         return;
-
+    char str2[length];
+    memcpy(str2, str, length);
+    str2[length] = '\0';
     jobject obj = (jobject)
         (*env)->CallObjectMethod (env, jobj, mid,
-                                  (*env)->NewStringUTF (env, str));
-
+                                  (*env)->NewStringUTF (env, str2));
     return (*env)->NewGlobalRef (env, obj);
+}
+
+void
+jni_delete_object (jobject jobj)
+{
+    JNIEnv *env = jni_get_env ();
+    if (env == NULL)
+        return;
+    (*env)->DeleteGlobalRef (env, jobj);
 }
 
 const char*
@@ -466,11 +476,13 @@ jni_get_value (jobject obj, jmethodID mid)
 
     if (iscopy == JNI_TRUE)
         (*env)->ReleaseIntArrayElements (env, jarr, values, JNI_ABORT);
+    
+    (*env)->DeleteLocalRef (env, jarr);
 
     return rarr;
 }
 
-void
+int
 jni_set_value (jobject obj, jmethodID mid, const int* values, int length)
 {
     JNIEnv *env = jni_get_env ();
@@ -479,7 +491,7 @@ jni_set_value (jobject obj, jmethodID mid, const int* values, int length)
 
     jintArray arr = (*env)->NewIntArray (env, length);
     (*env)->SetIntArrayRegion (env, arr, 0, length, values);
-    (*env)->CallObjectMethod (env, obj, mid, arr);
+    return (*env)->CallBooleanMethod (env, obj, mid, arr);
 }
 
 const char**
@@ -492,15 +504,18 @@ jni_call_str_array (jobject jobj, jmethodID mid1, jmethodID mid2)
         (*env)->CallObjectMethod (env, jobj, mid1);
     jobject iter = (*env)->CallObjectMethod (env, set, g_ctx.set_iterator);
     jint setSize = (size_t)(*env)->CallIntMethod (env, set, g_ctx.set_size);
-    if (setSize <= 0)
+    if (setSize <= 0) {
+        (*env)->DeleteLocalRef (env, iter);
+        (*env)->DeleteLocalRef (env, set);
         return NULL;
+    }
 
     const char **arr = (const char**) calloc (setSize, sizeof (char*));
     size_t i = 0;
-    for ( i = 0; i < setSize; i++ )
+    /*for ( i = 0; i < setSize; i++ )
     {
         arr[i] = (char*) calloc (40, sizeof (char));
-    }
+    }*/
 
     i = 0;
     while ((*env)->CallBooleanMethod (env, iter, g_ctx.iterator_has_next))
@@ -514,13 +529,15 @@ jni_call_str_array (jobject jobj, jmethodID mid1, jmethodID mid2)
             jstr = (jstring) obj;
         }
         const char* str = (*env)->GetStringUTFChars (env, jstr, NULL);
-        arr[i++] = str;
+        arr[i++] = strdup(str);
+        LOGE("### jni_call_str_array ### %s %p", arr[i-1], arr[i-1]);
         //(*env)->ReleaseStringUTFChars(env, jstr, str);
         (*env)->DeleteLocalRef (env, obj);
         if (mid2)
             (*env)->DeleteLocalRef (env, jstr);
     }
-
+    (*env)->DeleteLocalRef (env, iter);
+    (*env)->DeleteLocalRef (env, set);
     return arr;
 }
 
@@ -535,8 +552,11 @@ jni_call_int_array (jobject jobj, jmethodID mid1, jmethodID mid2)
         (*env)->CallObjectMethod (env, jobj, mid1);
     jobject iter = (*env)->CallObjectMethod (env, set, g_ctx.set_iterator);
     size_t setSize = (size_t) (*env)->CallIntMethod (env, set, g_ctx.set_size);
-    if (setSize <= 0)
+    if (setSize <= 0) {
+        (*env)->DeleteLocalRef (env, iter);
+        (*env)->DeleteLocalRef (env, set);
         return NULL;
+    }
 
     int *arr = calloc (setSize, sizeof *arr);
 
@@ -547,6 +567,7 @@ jni_call_int_array (jobject jobj, jmethodID mid1, jmethodID mid2)
         arr[i++] = (int) (*env)->CallIntMethod (env, obj, mid2);
         (*env)->DeleteLocalRef (env, obj);
     }
-
+    (*env)->DeleteLocalRef (env, iter);
+    (*env)->DeleteLocalRef (env, set);
     return arr;
 }

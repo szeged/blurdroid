@@ -60,7 +60,9 @@ impl Service {
                 let c = c_ptr as i32;
                 v.push(c.to_string());
             }
-            ffi::jni_free_int_array(characteristics);
+            if max > 0 {
+                ffi::jni_free_int_array(characteristics);
+            }
         }
         Ok(v)
     }

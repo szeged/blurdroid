@@ -16,7 +16,7 @@ struct BluetoothDevice
     int count;
 };
 
-BluetoothDevice* bluetooth_device_create_device (BluetoothAdapter*, const char*);
+BluetoothDevice* bluetooth_device_create_device (BluetoothAdapter*, const char*, int);
 
 const char* bluetooth_device_get_address (BluetoothDevice*);
 const char* bluetooth_device_get_name (BluetoothDevice*);

@@ -78,7 +78,7 @@ final class BluetoothGattCharacteristicWrapper {
             return null;
 
         int[] intArray = new int[values.length];
-        for(int i = 0, k = 0; i < values.length; i++) {
+        for(int i = 0; i < values.length; i++) {
             intArray[i] = values[i] & (0xff);
         }
         return intArray;
@@ -93,20 +93,21 @@ final class BluetoothGattCharacteristicWrapper {
         // The values type is int,
         // but only containt u8 values from rust
         byte[] byteArray = new byte[values.length];
-        for(int i = 0, k = 0; i < values.length; i++) {
+        for(int i = 0; i < values.length; i++) {
             byteArray[i] = (byte) values[i];
         }
         return mCharacteristic.setValue(byteArray);
     }
 
-    public int[] readValue() {
-        mDevice.getGatt().readCharacteristic(this);
-        return getValue();
+    public boolean readValue() {
+        return mDevice.getGatt().readCharacteristic(this);
     }
 
-    public void writeValue(int[] values) {
-        setValue(values);
-        mDevice.getGatt().writeCharacteristic(this);
+    public boolean writeValue(int[] values) {
+        // if we are not connected, we shouldn't change the "local" value
+        if (!mDevice.isConnected())
+            return false;
+        return setValue(values) && mDevice.getGatt().writeCharacteristic(this);
     }
 
     private void initFlags() {

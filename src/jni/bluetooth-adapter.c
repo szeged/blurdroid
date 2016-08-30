@@ -69,6 +69,7 @@ bluetooth_adapter_free_adapter (BluetoothAdapter *adapter)
 {
     if (adapter->count <= 0)
     {
+        jni_delete_object(adapter->adapter);
         jni_free (adapter);
     }
 }

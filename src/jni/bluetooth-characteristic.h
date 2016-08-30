@@ -25,8 +25,8 @@ const int* bluetooth_characteristic_get_gatt_descriptors (BluetoothCharacteristi
 int bluetooth_characteristic_get_gatt_descriptors_size (BluetoothCharacteristic*);
 const int* bluetooth_characteristic_get_value (BluetoothCharacteristic*);
 const int bluetooth_characteristic_get_value_size (BluetoothCharacteristic*);
-const int* bluetooth_characteristic_read_value (BluetoothCharacteristic*);
-void bluetooth_characteristic_write_value (BluetoothCharacteristic*, const int*, int length);
+int bluetooth_characteristic_read_value (BluetoothCharacteristic*);
+int bluetooth_characteristic_write_value (BluetoothCharacteristic*, const int*, int length);
 void bluetooth_characteristic_inc_refcount (BluetoothCharacteristic*);
 void bluetooth_characteristic_dec_refcount (BluetoothCharacteristic*);
 void bluetooth_characteristic_free_characteristic (BluetoothCharacteristic*);

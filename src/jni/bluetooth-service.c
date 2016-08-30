@@ -56,7 +56,9 @@ bluetooth_service_dec_refcount (BluetoothService *service)
 
 void
 bluetooth_service_free_service (BluetoothService *service) {
-    if (service->count <= 0) {
+    if (service->count <= 0)
+    {
+        jni_delete_object(service->service);
         jni_free (service);
     }
 }

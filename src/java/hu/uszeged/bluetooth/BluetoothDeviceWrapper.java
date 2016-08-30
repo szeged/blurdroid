@@ -77,6 +77,8 @@ final class BluetoothDeviceWrapper {
     }
 
     public void setConnected(boolean connected) {
+        if (!connected)
+            mGatt = null;
         mConnected = connected;
     }
 
@@ -123,11 +125,13 @@ final class BluetoothDeviceWrapper {
     }
 
     public void addService(BluetoothGattService service) {
-        mServices.put(service.hashCode(),
-            BluetoothGattServiceWrapper.create(service, this));
+        if (!mServices.containsKey(service.hashCode()))
+            mServices.put(service.hashCode(),
+                BluetoothGattServiceWrapper.create(service, this));
     }
 
     public int getServicesSize() {
+        Log.e("########","getServicesSize "+mServices.size());
         return mServices.values().size();
     }
 
@@ -140,11 +144,13 @@ final class BluetoothDeviceWrapper {
     }
 
     public void addCharacteristic(BluetoothGattCharacteristic characteristic) {
-        mCharacteristics.put(characteristic.hashCode(),
-            BluetoothGattCharacteristicWrapper.create(characteristic, this));
+        if (!mCharacteristics.containsKey(characteristic.hashCode()))
+            mCharacteristics.put(characteristic.hashCode(),
+                BluetoothGattCharacteristicWrapper.create(characteristic, this));
     }
 
     public int getCharacteristicsSize() {
+        Log.e("########","getCharacteristicsSize "+mCharacteristics.size());
         return mCharacteristics.values().size();
     }
 
@@ -157,12 +163,14 @@ final class BluetoothDeviceWrapper {
     }
 
     public void addDescriptor(BluetoothGattDescriptor descriptor) {
-        mDescriptors.put(descriptor.hashCode(),
-            BluetoothGattDescriptorWrapper.create(descriptor, this));
+        if (!mDescriptors.containsKey(descriptor.hashCode()))
+            mDescriptors.put(descriptor.hashCode(),
+                BluetoothGattDescriptorWrapper.create(descriptor, this));
     }
 
     public int getDescriptorsSize() {
-        return mServices.values().size();
+        Log.e("########","getDescriptorsSize "+mDescriptors.size());
+        return mDescriptors.values().size();
     }
 
     private void initUuids() {

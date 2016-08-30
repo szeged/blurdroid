@@ -7,11 +7,11 @@
 #include "jni-utils.h"
 
 BluetoothDevice *
-bluetooth_device_create_device (BluetoothAdapter *adapter, const char* address)
+bluetooth_device_create_device (BluetoothAdapter *adapter, const char* address, int length)
 {
     BluetoothDevice *device = jni_calloc (sizeof (*device));
 
-    device->device = jni_create_object_str(adapter->adapter, g_ctx.adapter_get_remote_device, address);
+    device->device = jni_create_object_str(adapter->adapter, g_ctx.adapter_get_remote_device, address, length);
     device->count = 1;
 
     return device;
@@ -56,7 +56,7 @@ bluetooth_device_get_tx_power (BluetoothDevice *device)
 void
 bluetooth_device_connect_gatt (BluetoothDevice *device)
 {
-    jni_call_void (device->device, g_ctx.device_connect_gatt);
+    jni_call_object (device->device, g_ctx.device_connect_gatt);
 }
 
 void
@@ -104,6 +104,7 @@ bluetooth_device_free_device (BluetoothDevice *device)
 {
     if (device->count <= 0)
     {
+        jni_delete_object(device->device);
         jni_free (device);
     }
 }

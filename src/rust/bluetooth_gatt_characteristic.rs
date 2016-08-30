@@ -55,7 +55,9 @@ impl Characteristic {
                 let d = d_ptr as i32;
                 v.push(d.to_string());
             }
-            ffi::jni_free_int_array(descriptors);
+            if max > 0 {
+                ffi::jni_free_int_array(descriptors);
+            }
         }
         Ok(v)
     }
@@ -70,30 +72,28 @@ impl Characteristic {
                 let val = (val_ptr as i32) as u8;
                 v.push(val);
             }
-            ffi::jni_free_int_array(values);
+            if max > 0 {
+                ffi::jni_free_int_array(values);
+            }
         }
         Ok(v)
     }
 
     pub fn read_value(&self) -> Result<Vec<u8>, Box<Error>> {
-        let mut v = vec!();
         unsafe {
-            let values = ffi::bluetooth_characteristic_read_value(self.characteristic());
-            let max = ffi::bluetooth_characteristic_get_value_size(self.characteristic()) as isize;
-            for i in 0..max {
-                let val_ptr = *values.offset(i);
-                let val = (val_ptr as i32) as u8;
-                v.push(val);
+            if !ffi::bluetooth_characteristic_read_value(self.characteristic()).is_positive() {
+                return Err(Box::from("Something went wrong..."));
             }
-            ffi::jni_free_int_array(values);
         }
-        Ok(v)
+        self.get_value()
     }
 
     pub fn write_value(&self, values: Vec<u8>) -> Result<(), Box<Error>> {
         let v = values.iter().map(|&x| x as i32).collect::<Vec<i32>>();
         unsafe  {
-            ffi::bluetooth_characteristic_write_value(self.characteristic(), v.as_ptr() as *const c_int, v.len() as c_int)
+            if !ffi::bluetooth_characteristic_write_value(self.characteristic(), v.as_ptr() as *const c_int, v.len() as c_int).is_positive() {
+                return Err(Box::from("Something went wrong..."));
+            }
         }
         Ok(())
     }
@@ -109,9 +109,13 @@ impl Characteristic {
                     None => continue,
                     Some(flag) => flag.to_owned(),
                 };
+                println!("##### {:?}", f);
                 v.push(f.clone());
             }
-            ffi::jni_free_string_array(flags);
+            println!("#### {:?}", v);
+            if max > 0 {
+                ffi::jni_free_string_array(flags, max as i32);
+            }
         }
         Ok(v)
     }

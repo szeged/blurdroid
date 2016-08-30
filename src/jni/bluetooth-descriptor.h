@@ -21,8 +21,8 @@ BluetoothDescriptor* bluetooth_descriptor_create_descriptor (BluetoothCharacteri
 const char* bluetooth_descriptor_get_uuid (BluetoothDescriptor*);
 const int* bluetooth_descriptor_get_value (BluetoothDescriptor*);
 const int bluetooth_descriptor_get_value_size (BluetoothDescriptor*);
-const int* bluetooth_descriptor_read_value (BluetoothDescriptor*);
-void bluetooth_descriptor_write_value (BluetoothDescriptor*, const int*, int);
+int bluetooth_descriptor_read_value (BluetoothDescriptor*);
+int bluetooth_descriptor_write_value (BluetoothDescriptor*, const int*, int);
 void bluetooth_descriptor_inc_refcount (BluetoothDescriptor*);
 void bluetooth_descriptor_dec_refcount (BluetoothDescriptor*);
 void bluetooth_descriptor_free_descriptor (BluetoothDescriptor*);

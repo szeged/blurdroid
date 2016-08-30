@@ -55,30 +55,28 @@ impl Descriptor {
                 let val = (val_ptr as i32) as u8;
                 v.push(val);
             }
-            ffi::jni_free_int_array(values);
+            if max > 0 {
+                ffi::jni_free_int_array(values);
+            }
         }
         Ok(v)
     }
 
     pub fn read_value(&self) -> Result<Vec<u8>, Box<Error>> {
-        let mut v = vec!();
         unsafe {
-            let values = ffi::bluetooth_descriptor_read_value(self.descriptor());
-            let max = ffi::bluetooth_descriptor_get_value_size(self.descriptor()) as isize;
-            for i in 0..max {
-                let val_ptr = *values.offset(i);
-                let val = (val_ptr as i32) as u8;
-                v.push(val);
+            if !ffi::bluetooth_descriptor_read_value(self.descriptor()).is_positive() {
+                return Err(Box::from("Something went wrong..."));
             }
-            ffi::jni_free_int_array(values);
         }
-        Ok(v)
+        self.get_value()
     }
 
     pub fn write_value(&self, values: Vec<u8>) -> Result<(), Box<Error>> {
         let v = values.iter().map(|&x| x as i32).collect::<Vec<i32>>();
         unsafe  {
-            ffi::bluetooth_descriptor_write_value(self.descriptor(), v.as_ptr() as *const c_int, v.len() as c_int)
+            if !ffi::bluetooth_descriptor_write_value(self.descriptor(), v.as_ptr() as *const c_int, v.len() as c_int).is_positive() {
+                return Err(Box::from("Something went wrong..."));
+            }
         }
         Ok(())
     }

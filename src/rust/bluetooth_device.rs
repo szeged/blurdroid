@@ -26,7 +26,6 @@ impl Device {
     }
 
     pub fn new(adapter: Arc<Adapter>, address: String) -> Device {
-        println!("#### device new {:?} {:?} {:?}", address, address.as_ptr(), address.len());
         let device = unsafe { ffi::bluetooth_device_create_device(adapter.adapter(), address.as_ptr() as *const c_char, address.len() as c_int) };
         Device {
             i: Box::new(IDevice { device: Cell::new(device) }),
@@ -98,10 +97,8 @@ impl Device {
                     None => continue,
                     Some(uuid) => uuid.to_owned(),
                 };
-                println!("##### {:?}", u);
                 v.push(u.clone());
             }
-            println!("#### {:?}", v);
             if max > 0 {
                 ffi::jni_free_string_array(uuids, max as i32);
             }

@@ -209,8 +209,7 @@ jni_init (JNIEnv *env)
     g_ctx.characteristic_get_gatt_descriptor =
         (*env)->GetMethodID (env, g_ctx.characteristic_cls,
                              "getDescriptor",
-                             "(Ljava/lang/String;)"
-                             "Lhu/uszeged/bluetooth/BluetoothGattDescriptorWrapper;");
+                             "(I)Lhu/uszeged/bluetooth/BluetoothGattDescriptorWrapper;");
 
     g_ctx.characteristic_get_gatt_descriptors =
         (*env)->GetMethodID (env, g_ctx.characteristic_cls,
@@ -374,9 +373,13 @@ jni_create_object_str (jobject jobj, jmethodID mid, const char* str, int length)
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
         return;
+
+    // FIXME
+    // For some reason, sometimes we get a longer string from rust
     char str2[length];
     memcpy(str2, str, length);
     str2[length] = '\0';
+
     jobject obj = (jobject)
         (*env)->CallObjectMethod (env, jobj, mid,
                                   (*env)->NewStringUTF (env, str2));
@@ -389,6 +392,7 @@ jni_delete_object (jobject jobj)
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
         return;
+
     (*env)->DeleteGlobalRef (env, jobj);
 }
 
@@ -500,6 +504,7 @@ jni_call_str_array (jobject jobj, jmethodID mid1, jmethodID mid2)
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
         return NULL;
+
     jobject set = (jobject)
         (*env)->CallObjectMethod (env, jobj, mid1);
     jobject iter = (*env)->CallObjectMethod (env, set, g_ctx.set_iterator);
@@ -511,13 +516,8 @@ jni_call_str_array (jobject jobj, jmethodID mid1, jmethodID mid2)
     }
 
     const char **arr = (const char**) calloc (setSize, sizeof (char*));
-    size_t i = 0;
-    /*for ( i = 0; i < setSize; i++ )
-    {
-        arr[i] = (char*) calloc (40, sizeof (char));
-    }*/
 
-    i = 0;
+    size_t i = 0;
     while ((*env)->CallBooleanMethod (env, iter, g_ctx.iterator_has_next))
     {
         jobject obj = (*env)->CallObjectMethod (env, iter, g_ctx.iterator_next);
@@ -530,12 +530,12 @@ jni_call_str_array (jobject jobj, jmethodID mid1, jmethodID mid2)
         }
         const char* str = (*env)->GetStringUTFChars (env, jstr, NULL);
         arr[i++] = strdup(str);
-        LOGE("### jni_call_str_array ### %s %p", arr[i-1], arr[i-1]);
         //(*env)->ReleaseStringUTFChars(env, jstr, str);
         (*env)->DeleteLocalRef (env, obj);
         if (mid2)
             (*env)->DeleteLocalRef (env, jstr);
     }
+
     (*env)->DeleteLocalRef (env, iter);
     (*env)->DeleteLocalRef (env, set);
     return arr;
@@ -567,6 +567,7 @@ jni_call_int_array (jobject jobj, jmethodID mid1, jmethodID mid2)
         arr[i++] = (int) (*env)->CallIntMethod (env, obj, mid2);
         (*env)->DeleteLocalRef (env, obj);
     }
+
     (*env)->DeleteLocalRef (env, iter);
     (*env)->DeleteLocalRef (env, set);
     return arr;

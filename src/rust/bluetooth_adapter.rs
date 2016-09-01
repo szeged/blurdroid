@@ -68,7 +68,6 @@ impl Adapter {
                     None => continue,
                     Some(dev) => dev.to_owned(),
                 };
-                println!("#### device list {:?} {:?} {:?}", d, d.as_ptr(), d_ptr);
                 v.push(d.clone());
             }
             if max > 0 {

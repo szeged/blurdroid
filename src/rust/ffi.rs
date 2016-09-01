@@ -20,7 +20,6 @@ extern {
     pub fn bluetooth_adapter_free_adapter(adapter: *mut BluetoothAdapter);
 
     pub fn bluetooth_device_create_device(adapter: *mut BluetoothAdapter, address: *const c_char, length: c_int) -> *mut BluetoothDevice;
-    //pub fn bluetooth_device_get_address(device: *mut BluetoothDevice) -> *const c_char;
     pub fn bluetooth_device_get_name(device: *mut BluetoothDevice) -> *const c_char;
     pub fn bluetooth_device_get_uuids (device: *mut BluetoothDevice) -> *const *const c_char;
     pub fn bluetooth_device_get_uuids_size (device: *mut BluetoothDevice) -> c_int;

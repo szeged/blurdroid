@@ -4,16 +4,19 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.HashMap;
 
 final class BluetoothGattServiceWrapper {
     private BluetoothGattService mService;
     private BluetoothDeviceWrapper mDevice;
+    private HashMap<Integer, BluetoothGattCharacteristicWrapper> mCharacteristics;
     private int mId;
 
     public BluetoothGattServiceWrapper(BluetoothGattService service,
             BluetoothDeviceWrapper device) {
         mService = service;
         mDevice = device;
+        mCharacteristics = new HashMap<Integer, BluetoothGattCharacteristicWrapper>();
         mId = service.hashCode();
     }
 
@@ -46,27 +49,25 @@ final class BluetoothGattServiceWrapper {
         return getType() == mService.SERVICE_TYPE_PRIMARY;
     }
 
+    public BluetoothGattCharacteristicWrapper getCharacteristic(int id) {
+        return mCharacteristics.get(id);
+    }
+
     public Set<BluetoothGattCharacteristicWrapper> getCharacteristics() {
         for (BluetoothGattCharacteristic characteristics : mService.getCharacteristics()) {
-            mDevice.addCharacteristic(characteristics);
+            addCharacteristic(characteristics);
         }
-        return mDevice.getCharacteristics();
+        return new HashSet<BluetoothGattCharacteristicWrapper>(mCharacteristics.values());
     }
 
-    public BluetoothGattCharacteristicWrapper getCharacteristic(String uuid) {
-        for (BluetoothGattCharacteristicWrapper characteristic : mDevice.getCharacteristics()) {
-            if (characteristic.getUuid() == uuid)
-                return characteristic;
-        }
-        return null;
-    }
-
-    public BluetoothGattCharacteristicWrapper getCharacteristic(int id) {
-        return mDevice.getCharacteristic(id);
+    public void addCharacteristic(BluetoothGattCharacteristic characteristic) {
+        if (!mCharacteristics.containsKey(characteristic.hashCode()))
+            mCharacteristics.put(characteristic.hashCode(),
+                BluetoothGattCharacteristicWrapper.create(characteristic, mDevice));
     }
 
     public int getCharacteristicsSize() {
-        return mDevice.getCharacteristicsSize();
+        return mCharacteristics.values().size();
     }
 
     public Set<BluetoothGattServiceWrapper> getIncludedServices() {

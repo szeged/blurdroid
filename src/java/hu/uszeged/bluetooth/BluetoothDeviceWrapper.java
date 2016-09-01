@@ -2,28 +2,17 @@ package hu.uszeged.bluetooth;
 
 import android.app.Application;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
 import android.content.Context;
 import android.os.ParcelUuid;
-import android.util.Log;
-import java.io.StringWriter;
-import java.io.PrintWriter;
 import java.util.UUID;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 
 final class BluetoothDeviceWrapper {
     private BluetoothDevice mDevice;
     private BluetoothGattWrapper mGatt;
     private BluetoothGattCallbackWrapper mCallback;
-    private HashMap<Integer, BluetoothGattServiceWrapper> mServices;
-    private HashMap<Integer, BluetoothGattCharacteristicWrapper> mCharacteristics;
-    private HashMap<Integer, BluetoothGattDescriptorWrapper> mDescriptors;
     private int mRssi;
     private ScanRecord mScanRecord;
     private Set<String> mUuids;
@@ -33,9 +22,6 @@ final class BluetoothDeviceWrapper {
         mDevice = device;
         mRssi = rssi;
         mScanRecord = ScanRecord.parseFromBytes(scanRecord);
-        mServices = new HashMap<Integer, BluetoothGattServiceWrapper>();
-        mCharacteristics = new HashMap<Integer, BluetoothGattCharacteristicWrapper>();
-        mDescriptors = new HashMap<Integer, BluetoothGattDescriptorWrapper>();
         mUuids = new HashSet<String>();
         mConnected = false;
         initUuids();
@@ -114,63 +100,6 @@ final class BluetoothDeviceWrapper {
 
     public BluetoothGattWrapper getGatt() {
         return mGatt;
-    }
-
-    public Set<BluetoothGattServiceWrapper> getServices() {
-        return new HashSet<BluetoothGattServiceWrapper>(mServices.values());
-    }
-
-    public BluetoothGattServiceWrapper getService(int id) {
-        return mServices.get(id);
-    }
-
-    public void addService(BluetoothGattService service) {
-        if (!mServices.containsKey(service.hashCode()))
-            mServices.put(service.hashCode(),
-                BluetoothGattServiceWrapper.create(service, this));
-    }
-
-    public int getServicesSize() {
-        Log.e("########","getServicesSize "+mServices.size());
-        return mServices.values().size();
-    }
-
-    public Set<BluetoothGattCharacteristicWrapper> getCharacteristics() {
-        return new HashSet<BluetoothGattCharacteristicWrapper>(mCharacteristics.values());
-    }
-
-    public BluetoothGattCharacteristicWrapper getCharacteristic(int id) {
-        return mCharacteristics.get(id);
-    }
-
-    public void addCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (!mCharacteristics.containsKey(characteristic.hashCode()))
-            mCharacteristics.put(characteristic.hashCode(),
-                BluetoothGattCharacteristicWrapper.create(characteristic, this));
-    }
-
-    public int getCharacteristicsSize() {
-        Log.e("########","getCharacteristicsSize "+mCharacteristics.size());
-        return mCharacteristics.values().size();
-    }
-
-    public Set<BluetoothGattDescriptorWrapper> getDescriptors() {
-        return new HashSet<BluetoothGattDescriptorWrapper>(mDescriptors.values());
-    }
-
-    public BluetoothGattDescriptorWrapper getDescriptor(int id) {
-        return mDescriptors.get(id);
-    }
-
-    public void addDescriptor(BluetoothGattDescriptor descriptor) {
-        if (!mDescriptors.containsKey(descriptor.hashCode()))
-            mDescriptors.put(descriptor.hashCode(),
-                BluetoothGattDescriptorWrapper.create(descriptor, this));
-    }
-
-    public int getDescriptorsSize() {
-        Log.e("########","getDescriptorsSize "+mDescriptors.size());
-        return mDescriptors.values().size();
     }
 
     private void initUuids() {

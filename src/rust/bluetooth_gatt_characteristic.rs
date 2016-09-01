@@ -109,10 +109,8 @@ impl Characteristic {
                     None => continue,
                     Some(flag) => flag.to_owned(),
                 };
-                println!("##### {:?}", f);
                 v.push(f.clone());
             }
-            println!("#### {:?}", v);
             if max > 0 {
                 ffi::jni_free_string_array(flags, max as i32);
             }

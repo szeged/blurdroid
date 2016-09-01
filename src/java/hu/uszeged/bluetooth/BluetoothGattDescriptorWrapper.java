@@ -1,8 +1,6 @@
 package hu.uszeged.bluetooth;
 
 import android.bluetooth.BluetoothGattDescriptor;
-import java.util.Set;
-import java.util.HashSet;
 
 final class BluetoothGattDescriptorWrapper {
     private BluetoothGattDescriptor mDescriptor;
@@ -61,13 +59,10 @@ final class BluetoothGattDescriptorWrapper {
     }
 
     public boolean readValue() {
-        return mDevice.getGatt().readDescriptor(this);
+        return mDevice.isConnected() && mDevice.getGatt().readDescriptor(this);
     }
 
     public boolean writeValue(int[] values) {
-        // if we are not connected, we shouldn't change the "local" value
-        if (!mDevice.isConnected())
-            return false;
-        return setValue(values) && mDevice.getGatt().writeDescriptor(this);
+        return mDevice.isConnected() && setValue(values) && mDevice.getGatt().writeDescriptor(this);
     }
 }

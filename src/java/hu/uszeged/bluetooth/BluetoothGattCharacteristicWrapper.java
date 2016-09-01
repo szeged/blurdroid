@@ -4,10 +4,12 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.HashMap;
 
 final class BluetoothGattCharacteristicWrapper {
     private BluetoothGattCharacteristic mCharacteristic;
     private BluetoothDeviceWrapper mDevice;
+    private HashMap<Integer, BluetoothGattDescriptorWrapper> mDescriptors;
     private Set<String> mFlags;
     private int mId;
 
@@ -15,6 +17,7 @@ final class BluetoothGattCharacteristicWrapper {
             BluetoothDeviceWrapper device) {
         mCharacteristic = characteristic;
         mDevice = device;
+        mDescriptors = new HashMap<Integer, BluetoothGattDescriptorWrapper>();
         mFlags = new HashSet<String>();
         mId = characteristic.hashCode();
         initFlags();
@@ -49,27 +52,25 @@ final class BluetoothGattCharacteristicWrapper {
         return mFlags.size();
     }
 
+    public BluetoothGattDescriptorWrapper getDescriptor(int id) {
+        return mDescriptors.get(id);
+    }
+
     public Set<BluetoothGattDescriptorWrapper> getDescriptors() {
         for (BluetoothGattDescriptor descriptor : mCharacteristic.getDescriptors()) {
-            mDevice.addDescriptor(descriptor);
+            addDescriptor(descriptor);
         }
-        return mDevice.getDescriptors();
+        return new HashSet<BluetoothGattDescriptorWrapper>(mDescriptors.values());
     }
 
-    public BluetoothGattDescriptorWrapper getDescriptor(String uuid) {
-        for (BluetoothGattDescriptorWrapper descriptor : mDevice.getDescriptors()) {
-            if (descriptor.getUuid() == uuid)
-                return descriptor;
-        }
-        return null;
-    }
-
-    public BluetoothGattDescriptorWrapper getDescriptor(int id) {
-        return mDevice.getDescriptor(id);
+    public void addDescriptor(BluetoothGattDescriptor descriptor) {
+        if (!mDescriptors.containsKey(descriptor.hashCode()))
+            mDescriptors.put(descriptor.hashCode(),
+                BluetoothGattDescriptorWrapper.create(descriptor, mDevice));
     }
 
     public int getDescriptorsSize() {
-        return mDevice.getDescriptorsSize();
+        return mDescriptors.values().size();
     }
 
     public int[] getValue() {
@@ -100,14 +101,11 @@ final class BluetoothGattCharacteristicWrapper {
     }
 
     public boolean readValue() {
-        return mDevice.getGatt().readCharacteristic(this);
+        return mDevice.isConnected() && mDevice.getGatt().readCharacteristic(this);
     }
 
     public boolean writeValue(int[] values) {
-        // if we are not connected, we shouldn't change the "local" value
-        if (!mDevice.isConnected())
-            return false;
-        return setValue(values) && mDevice.getGatt().writeCharacteristic(this);
+        return mDevice.isConnected() && setValue(values) && mDevice.getGatt().writeCharacteristic(this);
     }
 
     private void initFlags() {

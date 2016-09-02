@@ -99,7 +99,6 @@ jobject jni_create_object_int (jobject, jmethodID, int);
 jobject jni_create_object_str (jobject, jmethodID, const char*, int);
 void jni_delete_object (jobject);
 jobject jni_call_object (jobject, jmethodID);
-void jni_call_void (jobject, jmethodID);
 int jni_call_bool (jobject, jmethodID);
 int jni_call_int (jobject, jmethodID);
 int jni_set_value(jobject, jmethodID, const int*, int);

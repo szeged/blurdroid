@@ -2,6 +2,7 @@ use bluetooth_device::Device;
 use ffi;
 use std::cell::Cell;
 use std::error::Error;
+use std::ptr::{self};
 use std::sync::Arc;
 use utils;
 
@@ -36,24 +37,21 @@ impl Service {
 
     pub fn get_uuid(&self) -> Result<String, Box<Error>> {
         let uuid = unsafe { ffi::bluetooth_service_get_uuid(self.service()) };
-        let res = match utils::c_str_to_slice(&uuid) {
-            Some(a) => Ok(a.to_string()),
-            None => Err(Box::from("No uuid!")),
-        };
+        check_null!(&uuid, "No uuid found!");
+        let res = try!(utils::convert_cstr(&uuid, "No uuid found!"));
         unsafe { ffi::jni_free_string(uuid) };
-        res
+        Ok(res)
     }
 
     pub fn is_primary(&self) -> Result<bool, Box<Error>> {
-        unsafe {
-            Ok(ffi::bluetooth_service_is_primary(self.service()).is_positive())
-        }
+        Ok( unsafe { ffi::bluetooth_service_is_primary(self.service()).is_positive() })
     }
 
     pub fn get_gatt_characteristics(&self) -> Result<Vec<String>, Box<Error>> {
         let mut v = vec!();
         unsafe {
             let characteristics = ffi::bluetooth_service_get_gatt_characteristics(self.service());
+            check_null!(&characteristics, "No characteristics found!");
             let max = ffi::bluetooth_service_get_gatt_characteristics_size(self.service()) as isize;
             for i in 0..max {
                 let c_ptr = *characteristics.offset(i);

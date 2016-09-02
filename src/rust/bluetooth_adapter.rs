@@ -15,7 +15,7 @@ pub struct Adapter {
 }
 
 unsafe impl Send for Adapter {}
-unsafe impl Sync for Adapter { }
+unsafe impl Sync for Adapter {}
 
 impl Adapter {
     #[inline(always)]
@@ -25,42 +25,37 @@ impl Adapter {
 
     pub fn get_adapter() -> Result<Adapter, Box<Error>> {
         let adapter = unsafe { ffi::bluetooth_adapter_get_adapter() };
-        if adapter == ptr::null_mut() {
-            return Err(Box::from("No adapter found!"));
-        }
+        check_null!(&adapter, "No adapter found!");
         Ok(Adapter {
             i: Box::new(IAdapter { adapter: Cell::new(adapter) })
         })
     }
 
     pub fn get_id(&self) -> String {
-        "Adapter".to_string()
+        "BlurdroidAdapter".to_string()
     }
 
     pub fn get_address(&self) -> Result<String, Box<Error>> {
         let address = unsafe { ffi::bluetooth_adapter_get_address(self.adapter()) };
-        let res = match utils::c_str_to_slice(&address) {
-            Some(a) => Ok(a.to_string()),
-            None => Err(Box::from("No address!")),
-        };
+        check_null!(&address, "No address found!");
+        let res = try!(utils::convert_cstr(&address, "No address found!"));
         unsafe { ffi::jni_free_string(address) };
-        res
+        Ok(res)
     }
 
     pub fn get_name(&self) -> Result<String, Box<Error>> {
         let name = unsafe { ffi::bluetooth_adapter_get_name(self.adapter()) };
-        let res = match utils::c_str_to_slice(&name) {
-            Some(a) => Ok(a.to_string()),
-            None => Err(Box::from("No name!")),
-        };
+        check_null!(&name, "No name found!");
+        let res = try!(utils::convert_cstr(&name, "No name found!"));
         unsafe { ffi::jni_free_string(name) };
-        res
+        Ok(res)
     }
 
     pub fn get_device_list(&self) -> Result<Vec<String>, Box<Error>> {
         let mut v = vec!();
         unsafe {
             let devices = ffi::bluetooth_adapter_get_devices(self.adapter());
+            check_null!(&devices, "No devices found!");
             let max = ffi::bluetooth_adapter_get_devices_size(self.adapter()) as isize;
             for i in 0..max {
                 let d_ptr = *devices.offset(i);

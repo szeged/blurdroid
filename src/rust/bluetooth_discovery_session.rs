@@ -20,15 +20,17 @@ impl DiscoverySession {
     }
 
     pub fn start_discovery(&self) -> Result<(), Box<Error>> {
-        unsafe {
-            ffi::bluetooth_adapter_start_discovery(self.adapter.adapter());
+        let discovery = unsafe { ffi::bluetooth_adapter_start_discovery(self.adapter.adapter()) };
+        if !discovery.is_positive() {
+            return Err(Box::from("Discovery error!"));
         }
         Ok(())
     }
 
     pub fn stop_discovery(&self) -> Result<(), Box<Error>> {
-        unsafe {
-            ffi::bluetooth_adapter_stop_discovery(self.adapter.adapter());
+        let discovery = unsafe { ffi::bluetooth_adapter_stop_discovery(self.adapter.adapter()) };
+        if !discovery.is_positive() {
+            return Err(Box::from("Discovery error!"));
         }
         Ok(())
     }

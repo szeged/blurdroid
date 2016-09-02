@@ -73,29 +73,31 @@ final class BluetoothDeviceWrapper {
             .getMethod("currentApplication").invoke(null, (Object[]) null);
     }
 
-    public BluetoothGattWrapper connectGatt() {
+    public boolean connectGatt() {
         if (mGatt != null) {
             if (mConnected) {
                 mGatt.discoverServices();
             } else {
                 mGatt.connect();
             }
-            return mGatt;
+        } else {
+            try {
+                Context ctx = getApplicationUsingReflection();
+                mGatt = BluetoothGattWrapper.create(
+                    mDevice.connectGatt(ctx, /*autoConnect*/ false,
+                        BluetoothGattCallbackWrapper.create(
+                            this)/*, BluetoothDevice.TRANSPORT_LE*/), this);
+            } catch (final Exception e) {
+                setConnected(false);
+                return false;
+            }
         }
-        try {
-            Context ctx = getApplicationUsingReflection();
-            mGatt = BluetoothGattWrapper.create(
-                mDevice.connectGatt(ctx, /*autoConnect*/ false,
-                    BluetoothGattCallbackWrapper.create(
-                        this)/*, BluetoothDevice.TRANSPORT_LE*/), this);
-        } catch (final Exception e) {
-            mGatt = null;
-        }
-        return mGatt;
+        return true;
     }
 
-    public void disconnect() {
+    public boolean disconnect() {
         mGatt.disconnect();
+        return true;
     }
 
     public BluetoothGattWrapper getGatt() {

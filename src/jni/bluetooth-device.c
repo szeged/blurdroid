@@ -53,16 +53,16 @@ bluetooth_device_get_tx_power (BluetoothDevice *device)
     return jni_call_int (device->device, g_ctx.device_get_tx_power);
 }
 
-void
+int
 bluetooth_device_connect_gatt (BluetoothDevice *device)
 {
-    jni_call_object (device->device, g_ctx.device_connect_gatt);
+    return jni_call_bool (device->device, g_ctx.device_connect_gatt);
 }
 
-void
+int
 bluetooth_device_disconnect (BluetoothDevice *device)
 {
-    jni_call_void (device->device, g_ctx.device_disconnect);
+    return jni_call_bool (device->device, g_ctx.device_disconnect);
 }
 
 int

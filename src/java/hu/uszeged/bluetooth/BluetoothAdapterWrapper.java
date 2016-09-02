@@ -57,12 +57,13 @@ final class BluetoothAdapterWrapper {
         return mAdapter.disable();
     }
 
-    public void startLeScan() {
-        mAdapter.startLeScan(mLeScanCallback);
+    public boolean startLeScan() {
+        return mAdapter.startLeScan(mLeScanCallback);
     }
 
-    public void stopLeScan() {
+    public boolean stopLeScan() {
         mAdapter.stopLeScan(mLeScanCallback);
+        return true;
     }
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback =

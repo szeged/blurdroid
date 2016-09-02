@@ -19,8 +19,8 @@ BluetoothAdapter* bluetooth_adapter_get_adapter ();
 
 const char* bluetooth_adapter_get_address (BluetoothAdapter*);
 const char* bluetooth_adapter_get_name (BluetoothAdapter*);
-void bluetooth_adapter_start_discovery (BluetoothAdapter *adapter);
-void bluetooth_adapter_stop_discovery (BluetoothAdapter *adapter);
+int bluetooth_adapter_start_discovery (BluetoothAdapter *adapter);
+int bluetooth_adapter_stop_discovery (BluetoothAdapter *adapter);
 const char ** bluetooth_adapter_get_devices (BluetoothAdapter*);
 int bluetooth_adapter_get_devices_size (BluetoothAdapter*);
 void bluetooth_adapter_inc_refcount (BluetoothAdapter*);

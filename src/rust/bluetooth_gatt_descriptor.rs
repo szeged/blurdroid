@@ -3,6 +3,7 @@ use ffi;
 use std::cell::Cell;
 use std::error::Error;
 use std::os::raw::{c_int};
+use std::ptr::{self};
 use std::sync::Arc;
 use utils;
 
@@ -37,18 +38,17 @@ impl Descriptor {
 
     pub fn get_uuid(&self) -> Result<String, Box<Error>> {
         let uuid = unsafe { ffi::bluetooth_descriptor_get_uuid(self.descriptor()) };
-        let res = match utils::c_str_to_slice(&uuid) {
-            Some(a) => Ok(a.to_string()),
-            None => Err(Box::from("No uuid!")),
-        };
+        check_null!(&uuid, "No uuid found!");
+        let res = try!(utils::convert_cstr(&uuid, "No uuid found!"));
         unsafe { ffi::jni_free_string(uuid) };
-        res
+        Ok(res)
     }
 
     pub fn get_value(&self) -> Result<Vec<u8>, Box<Error>> {
         let mut v = vec!();
         unsafe {
             let values = ffi::bluetooth_descriptor_get_value(self.descriptor());
+            check_null!(&values, "No value found!");
             let max = ffi::bluetooth_descriptor_get_value_size(self.descriptor()) as isize;
             for i in 0..max {
                 let val_ptr = *values.offset(i);
@@ -63,20 +63,18 @@ impl Descriptor {
     }
 
     pub fn read_value(&self) -> Result<Vec<u8>, Box<Error>> {
-        unsafe {
-            if !ffi::bluetooth_descriptor_read_value(self.descriptor()).is_positive() {
-                return Err(Box::from("Something went wrong..."));
-            }
+        let values = unsafe { ffi::bluetooth_descriptor_read_value(self.descriptor()) };
+        if !values.is_positive() {
+            return Err(Box::from("Read value error!"));
         }
         self.get_value()
     }
 
     pub fn write_value(&self, values: Vec<u8>) -> Result<(), Box<Error>> {
         let v = values.iter().map(|&x| x as i32).collect::<Vec<i32>>();
-        unsafe  {
-            if !ffi::bluetooth_descriptor_write_value(self.descriptor(), v.as_ptr() as *const c_int, v.len() as c_int).is_positive() {
-                return Err(Box::from("Something went wrong..."));
-            }
+        let value = unsafe { ffi::bluetooth_descriptor_write_value(self.descriptor(), v.as_ptr() as *const c_int, v.len() as c_int) };
+        if !value.is_positive() {
+            return Err(Box::from("Write value error!"));
         }
         Ok(())
     }

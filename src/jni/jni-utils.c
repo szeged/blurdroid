@@ -64,12 +64,12 @@ jni_init (JNIEnv *env)
     g_ctx.adapter_start_le_scan =
         (*env)->GetMethodID (env, g_ctx.adapter_cls,
                              "startLeScan",
-                             "()V");
+                             "()Z");
 
     g_ctx.adapter_stop_le_scan =
         (*env)->GetMethodID (env, g_ctx.adapter_cls,
                              "stopLeScan",
-                             "()V");
+                             "()Z");
 
     jclass classBtd =
         (*env)->FindClass (env, "hu/uszeged/bluetooth/BluetoothDeviceWrapper");
@@ -114,12 +114,12 @@ jni_init (JNIEnv *env)
     g_ctx.device_connect_gatt =
         (*env)->GetMethodID (env, g_ctx.device_cls,
                              "connectGatt",
-                             "()Lhu/uszeged/bluetooth/BluetoothGattWrapper;");
+                             "()Z");
 
     g_ctx.device_disconnect =
         (*env)->GetMethodID (env, g_ctx.device_cls,
                              "disconnect",
-                             "()V");
+                             "()Z");
 
     g_ctx.device_get_gatt =
         (*env)->GetMethodID (env, g_ctx.device_cls,
@@ -333,7 +333,7 @@ jni_create_static_object (jclass cls, jmethodID mid)
 {
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
-        return;
+        return NULL;
 
     jobject obj = (jobject)
         (*env)->CallStaticObjectMethod (env, cls, mid);
@@ -346,7 +346,7 @@ jni_create_object (jobject jobj, jmethodID mid)
 {
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
-        return;
+        return NULL;
 
     jobject obj = (jobject)
         (*env)->CallObjectMethod (env, jobj, mid);
@@ -359,7 +359,7 @@ jni_create_object_int (jobject jobj, jmethodID mid, int i)
 {
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
-        return;
+        return NULL;
 
     jobject obj = (jobject)
         (*env)->CallObjectMethod (env, jobj, mid, (jint)i);
@@ -372,7 +372,7 @@ jni_create_object_str (jobject jobj, jmethodID mid, const char* str, int length)
 {
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
-        return;
+        return NULL;
 
     // FIXME
     // For some reason, sometimes we get a longer string from rust
@@ -412,22 +412,12 @@ jni_call_str (jobject obj, jmethodID mid)
     return str;
 }
 
-void
-jni_call_void (jobject obj, jmethodID mid)
-{
-    JNIEnv *env = jni_get_env ();
-    if (env == NULL)
-        return;
-
-    (*env)->CallVoidMethod (env, obj, mid);
-}
-
 int
 jni_call_int (jobject obj, jmethodID mid)
 {
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
-        return 0;
+        return NULL;
 
     return (*env)->CallIntMethod (env, obj, mid);
 }
@@ -437,7 +427,7 @@ jni_call_bool (jobject obj, jmethodID mid)
 {
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
-        return 0;
+        return NULL;
 
     return (*env)->CallBooleanMethod (env, obj, mid);
 }
@@ -465,7 +455,7 @@ jni_get_value (jobject obj, jmethodID mid)
 
     jsize len = (*env)->GetArrayLength (env, jarr);
     if (len <= 0)
-        return 0;
+        return NULL;
 
     int *rarr = calloc ((size_t)len, sizeof *rarr);
 
@@ -491,7 +481,7 @@ jni_set_value (jobject obj, jmethodID mid, const int* values, int length)
 {
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
-        return;
+        return NULL;
 
     jintArray arr = (*env)->NewIntArray (env, length);
     (*env)->SetIntArrayRegion (env, arr, 0, length, values);

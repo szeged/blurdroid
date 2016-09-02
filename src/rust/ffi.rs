@@ -11,8 +11,8 @@ extern {
     pub fn bluetooth_adapter_get_adapter() -> *mut BluetoothAdapter;
     pub fn bluetooth_adapter_get_address(adapter: *mut BluetoothAdapter) -> *const c_char;
     pub fn bluetooth_adapter_get_name(adapter: *mut BluetoothAdapter) -> *const c_char;
-    pub fn bluetooth_adapter_start_discovery(adapter: *mut BluetoothAdapter);
-    pub fn bluetooth_adapter_stop_discovery(adapter: *mut BluetoothAdapter);
+    pub fn bluetooth_adapter_start_discovery(adapter: *mut BluetoothAdapter) -> c_int;
+    pub fn bluetooth_adapter_stop_discovery(adapter: *mut BluetoothAdapter) -> c_int;
     pub fn bluetooth_adapter_get_devices(adapter: *mut BluetoothAdapter) -> *const *const c_char;
     pub fn bluetooth_adapter_get_devices_size(adapter: *mut BluetoothAdapter) -> c_int;
     pub fn bluetooth_adapter_inc_refcount(adapter: *mut BluetoothAdapter);
@@ -25,8 +25,8 @@ extern {
     pub fn bluetooth_device_get_uuids_size (device: *mut BluetoothDevice) -> c_int;
     pub fn bluetooth_device_get_rssi (device: *mut BluetoothDevice) -> c_int;
     pub fn bluetooth_device_get_tx_power (device: *mut BluetoothDevice) -> c_int;
-    pub fn bluetooth_device_connect_gatt(device: *mut BluetoothDevice);
-    pub fn bluetooth_device_disconnect(device: *mut BluetoothDevice);
+    pub fn bluetooth_device_connect_gatt(device: *mut BluetoothDevice) -> c_int;
+    pub fn bluetooth_device_disconnect(device: *mut BluetoothDevice) -> c_int;
     pub fn bluetooth_device_is_connected(device: *mut BluetoothDevice) -> c_int;
     pub fn bluetooth_device_get_gatt_services(device: *mut BluetoothDevice) -> *const c_int;
     pub fn bluetooth_device_get_gatt_services_size(device: *mut BluetoothDevice) -> c_int;

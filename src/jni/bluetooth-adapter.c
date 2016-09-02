@@ -13,6 +13,10 @@ bluetooth_adapter_get_adapter ()
 
     adapter->adapter = jni_create_static_object (g_ctx.adapter_cls, g_ctx.adapter_get_adapter);
     adapter->count = 1;
+    if (adapter->adapter == NULL) {
+        bluetooth_adapter_free_adapter(adapter);
+        adapter = NULL;
+    }
     return adapter;
 }
 
@@ -28,16 +32,16 @@ bluetooth_adapter_get_name (BluetoothAdapter *adapter)
     return jni_call_str (adapter->adapter, g_ctx.adapter_get_name);
 }
 
-void
+int
 bluetooth_adapter_start_discovery (BluetoothAdapter *adapter)
 {
-    jni_call_void (adapter->adapter, g_ctx.adapter_start_le_scan);
+    jni_call_bool (adapter->adapter, g_ctx.adapter_start_le_scan);
 }
 
-void
+int
 bluetooth_adapter_stop_discovery (BluetoothAdapter *adapter)
 {
-    jni_call_void (adapter->adapter, g_ctx.adapter_stop_le_scan);
+    jni_call_bool (adapter->adapter, g_ctx.adapter_stop_le_scan);
 }
 
 const char **

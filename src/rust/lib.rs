@@ -1,5 +1,9 @@
 #![cfg(target_os = "android")]
 
+#[macro_use]
+mod utils;
+mod ffi;
+
 pub use bluetooth_adapter::Adapter;
 pub use bluetooth_device::Device;
 pub use bluetooth_gatt_service::Service;
@@ -14,5 +18,3 @@ pub mod bluetooth_gatt_characteristic;
 pub mod bluetooth_gatt_descriptor;
 pub mod bluetooth_discovery_session;
 
-mod ffi;
-mod utils;

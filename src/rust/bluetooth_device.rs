@@ -43,36 +43,37 @@ impl Device {
 
     pub fn get_name(&self) -> Result<String, Box<Error>> {
         let name = unsafe { ffi::bluetooth_device_get_name(self.device()) };
-        let res = match utils::c_str_to_slice(&name) {
-            Some(a) => Ok(a.to_string()),
-            None => Err(Box::from("No name!")),
-        };
+        check_null!(&name, "No name found!");
+        let res = try!(utils::convert_cstr(&name, "No name found!"));
         unsafe { ffi::jni_free_string(name) };
-        res
+        Ok(res)
     }
 
     pub fn connect(&self) -> Result<(), Box<Error>> {
-        unsafe {
-            Ok(ffi::bluetooth_device_connect_gatt(self.device()))
+        let connect = unsafe { ffi::bluetooth_device_connect_gatt(self.device()) };
+        if !connect.is_positive() {
+            return Err(Box::from("Connect error!"));
         }
+        Ok(())
     }
 
     pub fn disconnect(&self) -> Result<(), Box<Error>> {
-        unsafe {
-            Ok(ffi::bluetooth_device_disconnect(self.device()))
+        let disconnect = unsafe { ffi::bluetooth_device_disconnect(self.device()) };
+        if !disconnect.is_positive() {
+            return Err(Box::from("Disconnect error!"));
         }
+        Ok(())
     }
 
     pub fn is_connected(&self) -> Result<bool, Box<Error>> {
-        unsafe {
-            Ok(ffi::bluetooth_device_is_connected(self.device()).is_positive())
-        }
+        Ok( unsafe { ffi::bluetooth_device_is_connected(self.device()).is_positive() })
     }
 
     pub fn get_gatt_services(&self) -> Result<Vec<String>, Box<Error>> {
         let mut v = vec!();
         unsafe {
             let services = ffi::bluetooth_device_get_gatt_services(self.device());
+            check_null!(&services, "No services found!");
             let max = ffi::bluetooth_device_get_gatt_services_size(self.device()) as isize;
             for i in 0..max {
                 let s_ptr = *services.offset(i);
@@ -90,6 +91,7 @@ impl Device {
         let mut v = vec!();
         unsafe {
             let uuids = ffi::bluetooth_device_get_uuids(self.device());
+            check_null!(&uuids, "No uuids found!");
             let max = ffi::bluetooth_device_get_uuids_size(self.device()) as isize;
             for i in 0..max {
                 let u_ptr = *uuids.offset(i);

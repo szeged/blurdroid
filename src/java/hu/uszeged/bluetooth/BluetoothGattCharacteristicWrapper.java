@@ -108,6 +108,14 @@ final class BluetoothGattCharacteristicWrapper {
         return mDevice.isConnected() && setValue(values) && mDevice.getGatt().writeCharacteristic(this);
     }
 
+    public boolean startNotify() {
+        return mDevice.isConnected() && mDevice.getGatt().setCharacteristicNotification(this, true);
+    }
+
+    public boolean stopNotify() {
+        return mDevice.isConnected() && mDevice.getGatt().setCharacteristicNotification(this, false);
+    }
+
     private void initFlags() {
         int flag = mCharacteristic.getProperties();
         if ((flag & BluetoothGattCharacteristic.PROPERTY_BROADCAST) > 0) {

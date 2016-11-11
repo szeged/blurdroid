@@ -123,11 +123,19 @@ impl Characteristic {
     }
 
     pub fn start_notify(&self) -> Result<(), Box<Error>> {
-        Err(Box::from(utils::NOT_SUPPORTED_ERROR))
+        let notify = unsafe { ffi::bluetooth_characteristic_start_notify(self.characteristic()) };
+        if !notify.is_positive() {
+            return Err(Box::from("Notify error!"));
+        }
+        Ok(())
     }
 
     pub fn stop_notify(&self) -> Result<(), Box<Error>> {
-        Err(Box::from(utils::NOT_SUPPORTED_ERROR))
+        let notify = unsafe { ffi::bluetooth_characteristic_stop_notify(self.characteristic()) };
+        if !notify.is_positive() {
+            return Err(Box::from("Notify error!"));
+        }
+        Ok(())
     }
 }
 

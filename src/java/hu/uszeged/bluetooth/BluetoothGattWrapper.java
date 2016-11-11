@@ -81,4 +81,9 @@ final class BluetoothGattWrapper {
         return !mDevice.isConnected() ? false :
             mGatt.writeDescriptor(descriptor.get());
     }
+
+    public boolean setCharacteristicNotification(BluetoothGattCharacteristicWrapper characteristic, boolean enable) {
+        return !mDevice.isConnected() ? false :
+            mGatt.setCharacteristicNotification(characteristic.get(), enable);
+    }
 }

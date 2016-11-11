@@ -73,6 +73,8 @@ typedef struct {
     jmethodID characteristic_get_value_size;
     jmethodID characteristic_read_value;
     jmethodID characteristic_write_value;
+    jmethodID characteristic_start_notify;
+    jmethodID characteristic_stop_notify;
     // gatt descriptor
     jclass descriptor_cls;
     jmethodID descriptor_get_id;

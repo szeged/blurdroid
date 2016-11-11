@@ -53,6 +53,8 @@ extern {
     pub fn bluetooth_characteristic_get_value_size(characteristic: *mut BluetoothCharacteristic) -> c_int;
     pub fn bluetooth_characteristic_read_value(characteristic: *mut BluetoothCharacteristic) -> c_int;
     pub fn bluetooth_characteristic_write_value(characteristic: *mut BluetoothCharacteristic, array: *const c_int, length: c_int) -> c_int;
+    pub fn bluetooth_characteristic_start_notify(characteristic: *mut BluetoothCharacteristic) -> c_int;
+    pub fn bluetooth_characteristic_stop_notify(characteristic: *mut BluetoothCharacteristic) -> c_int;
     pub fn bluetooth_characteristic_inc_refcount(characteristic: *mut BluetoothCharacteristic);
     pub fn bluetooth_characteristic_dec_refcount(characteristic: *mut BluetoothCharacteristic);
     pub fn bluetooth_characteristic_free_characteristic(characteristic: *mut BluetoothCharacteristic);

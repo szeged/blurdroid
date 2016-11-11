@@ -241,6 +241,16 @@ jni_init (JNIEnv *env)
                              "writeValue",
                              "([I)Z");
 
+    g_ctx.characteristic_start_notify =
+        (*env)->GetMethodID (env, g_ctx.characteristic_cls,
+                             "startNotify",
+                             "()Z");
+
+    g_ctx.characteristic_stop_notify =
+        (*env)->GetMethodID (env, g_ctx.characteristic_cls,
+                             "stopNotify",
+                             "()Z");
+
     jclass classBtdsc =
         (*env)->FindClass (env, "hu/uszeged/bluetooth/BluetoothGattDescriptorWrapper");
     g_ctx.descriptor_cls =
@@ -470,7 +480,7 @@ jni_get_value (jobject obj, jmethodID mid)
 
     if (iscopy == JNI_TRUE)
         (*env)->ReleaseIntArrayElements (env, jarr, values, JNI_ABORT);
-    
+
     (*env)->DeleteLocalRef (env, jarr);
 
     return rarr;

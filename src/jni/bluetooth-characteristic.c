@@ -71,6 +71,18 @@ bluetooth_characteristic_write_value (BluetoothCharacteristic *characteristic, c
     return jni_set_value (characteristic->characteristic, g_ctx.characteristic_write_value, values, length);
 }
 
+int
+bluetooth_characteristic_start_notify (BluetoothCharacteristic *characteristic)
+{
+    return jni_call_bool (characteristic->characteristic, g_ctx.characteristic_start_notify);
+}
+
+int
+bluetooth_characteristic_stop_notify (BluetoothCharacteristic *characteristic)
+{
+    return jni_call_bool (characteristic->characteristic, g_ctx.characteristic_stop_notify);
+}
+
 void
 bluetooth_characteristic_inc_refcount (BluetoothCharacteristic *characteristic)
 {

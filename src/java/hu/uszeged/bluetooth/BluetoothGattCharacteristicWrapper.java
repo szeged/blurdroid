@@ -117,7 +117,7 @@ final class BluetoothGattCharacteristicWrapper {
             mFlags.add("read");
         }
         if ((flag & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) > 0) {
-            mFlags.add("write_without_response");
+            mFlags.add("write-without-response");
         }
         if ((flag & BluetoothGattCharacteristic.PROPERTY_WRITE) > 0) {
             mFlags.add("write");
@@ -129,7 +129,7 @@ final class BluetoothGattCharacteristicWrapper {
             mFlags.add("indicate");
         }
         if ((flag & BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE) > 0) {
-            mFlags.add("authenticated_signed_writes");
+            mFlags.add("authenticated-signed-writes");
         }
     }
 }

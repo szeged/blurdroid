@@ -50,7 +50,7 @@ bluetooth_characteristic_get_gatt_descriptors_size (BluetoothCharacteristic *cha
 const int*
 bluetooth_characteristic_get_value (BluetoothCharacteristic *characteristic)
 {
-    return jni_get_value (characteristic->characteristic, g_ctx.characteristic_get_value);
+    return jni_get_value (characteristic->characteristic, g_ctx.characteristic_get_value, -1);
 }
 
 const int

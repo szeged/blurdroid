@@ -26,9 +26,11 @@ import android.os.ParcelUuid;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -105,6 +107,22 @@ public final class ScanRecord {
         return mManufacturerSpecificData;
     }
 
+    public int[] getManufacturerDataKeys() {
+        int size = getManufacturerDataKeysSize();
+        if (size == 0) {
+            return null;
+        }
+        int[] keys = new int[size];
+        for (int i = 0; i < size; i++) {
+            keys[i] = mManufacturerSpecificData.keyAt(i);
+        }
+        return keys;
+    }
+
+    public int getManufacturerDataKeysSize() {
+        return mManufacturerSpecificData.size();
+    }
+
     /**
      * Returns the manufacturer specific data associated with the manufacturer id. Returns
      * {@code null} if the {@code manufacturerId} is not found.
@@ -113,11 +131,39 @@ public final class ScanRecord {
         return mManufacturerSpecificData.get(manufacturerId);
     }
 
+    public int[] getManufacturerDataValues(int key) {
+        byte[] values = getManufacturerSpecificData(key);
+        if (values == null)
+            return null;
+
+        int[] intArray = new int[values.length];
+        for(int i = 0; i < values.length; i++) {
+            intArray[i] = values[i] & (0xff);
+        }
+        return intArray;
+    }
+
+    public int getManufacturerDataValuesSize(int key) {
+        return getManufacturerSpecificData(key).length;
+    }
+
     /**
      * Returns a map of service UUID and its corresponding service data.
      */
     public Map<ParcelUuid, byte[]> getServiceData() {
         return mServiceData;
+    }
+
+    public Set<String> getServiceDataKeys() {
+        Set<String> uuids = new HashSet();
+        for (ParcelUuid uuid : mServiceData.keySet()) {
+            uuids.add(uuid.getUuid().toString());
+        }
+        return uuids;
+    }
+
+    public int getServiceDataKeysSize() {
+        return mServiceData.size();
     }
 
     /**
@@ -129,6 +175,30 @@ public final class ScanRecord {
             return null;
         }
         return mServiceData.get(serviceDataUuid);
+    }
+
+    public byte[] getServiceData(String serviceDataUuid) {
+        return getServiceData(ParcelUuid.fromString(serviceDataUuid));
+    }
+
+    public int getServiceDataSize(String serviceDataUuid) {
+        return getServiceData(serviceDataUuid).length;
+    }
+
+    public int[] getServiceDataValues(String key) {
+        byte[] values = getServiceData(key);
+        if (values == null)
+            return null;
+
+        int[] intArray = new int[values.length];
+        for(int i = 0; i < values.length; i++) {
+            intArray[i] = values[i] & (0xff);
+        }
+        return intArray;
+    }
+
+    public int getServiceDataValuesSize(String key) {
+        return getServiceData(key).length;
     }
 
     /**

@@ -53,6 +53,54 @@ bluetooth_device_get_tx_power (BluetoothDevice *device)
     return jni_call_int (device->device, g_ctx.device_get_tx_power);
 }
 
+const int*
+bluetooth_device_get_manufacturer_data_keys (BluetoothDevice *device)
+{
+    return jni_get_value (device->device, g_ctx.device_get_manufacturer_data_keys, -1);
+}
+
+int
+bluetooth_device_get_manufacturer_data_keys_size (BluetoothDevice *device)
+{
+    return jni_call_int (device->device, g_ctx.device_get_manufacturer_data_keys_size);
+}
+
+const int*
+bluetooth_device_get_manufacturer_data_values (BluetoothDevice *device, int key)
+{
+    return jni_get_value (device->device, g_ctx.device_get_manufacturer_data_values, key);
+}
+
+int
+bluetooth_device_get_manufacturer_data_values_size (BluetoothDevice *device, int key)
+{
+    return jni_call_int2 (device->device, g_ctx.device_get_manufacturer_data_values_size, key);
+}
+
+const char**
+bluetooth_device_get_service_data_keys (BluetoothDevice *device)
+{
+    return jni_call_str_array (device->device, g_ctx.device_get_service_data_keys, g_ctx.null);
+}
+
+int
+bluetooth_device_get_service_data_keys_size (BluetoothDevice *device)
+{
+    return jni_call_int (device->device, g_ctx.device_get_service_data_keys_size);
+}
+
+const int*
+bluetooth_device_get_service_data_values (BluetoothDevice *device, const char* key, int length)
+{
+    return jni_get_value2 (device->device, g_ctx.device_get_service_data_values, key, length);
+}
+
+int
+bluetooth_device_get_service_data_values_size (BluetoothDevice *device, const char* key, int length)
+{
+    return jni_call_int3 (device->device, g_ctx.device_get_service_data_values_size, key, length);
+}
+
 int
 bluetooth_device_connect_gatt (BluetoothDevice *device)
 {

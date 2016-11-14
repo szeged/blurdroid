@@ -106,6 +106,46 @@ jni_init (JNIEnv *env)
                              "getTxPower",
                              "()I");
 
+    g_ctx.device_get_manufacturer_data_keys =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getManufacturerDataKeys",
+                             "()[I");
+
+    g_ctx.device_get_manufacturer_data_keys_size =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getManufacturerDataKeysSize",
+                             "()I");
+
+    g_ctx.device_get_manufacturer_data_values =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getManufacturerDataValues",
+                             "(I)[I");
+
+    g_ctx.device_get_manufacturer_data_values_size =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getManufacturerDataValuesSize",
+                             "(I)I");
+
+    g_ctx.device_get_service_data_keys =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getServiceDataKeys",
+                             "()Ljava/util/Set;");
+
+    g_ctx.device_get_service_data_keys_size =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getServiceDataKeysSize",
+                             "()I");
+
+    g_ctx.device_get_service_data_values =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getServiceDataValues",
+                             "(Ljava/lang/String;)[I");
+
+    g_ctx.device_get_service_data_values_size =
+        (*env)->GetMethodID (env, g_ctx.device_cls,
+                             "getServiceDataValuesSize",
+                             "(Ljava/lang/String;)I");
+
     g_ctx.device_is_connected =
         (*env)->GetMethodID (env, g_ctx.device_cls,
                              "isConnected",
@@ -433,6 +473,33 @@ jni_call_int (jobject obj, jmethodID mid)
 }
 
 int
+jni_call_int2 (jobject obj, jmethodID mid, int arg)
+{
+    JNIEnv *env = jni_get_env ();
+    if (env == NULL)
+        return NULL;
+
+    return (*env)->CallIntMethod (env, obj, mid, (jint)arg);
+}
+
+int
+jni_call_int3 (jobject obj, jmethodID mid, const char* str, int length)
+{
+    JNIEnv *env = jni_get_env ();
+        if (env == NULL)
+            return NULL;
+
+        // FIXME
+        // For some reason, sometimes we get a longer string from rust
+        char str2[length];
+        memcpy(str2, str, length);
+        str2[length] = '\0';
+
+        return (*env)->CallIntMethod (env, obj, mid,
+                                      (*env)->NewStringUTF (env, str2));
+}
+
+int
 jni_call_bool (jobject obj, jmethodID mid)
 {
     JNIEnv *env = jni_get_env ();
@@ -453,13 +520,60 @@ jni_call_object (jobject obj, jmethodID mid)
 }
 
 const int*
-jni_get_value (jobject obj, jmethodID mid)
+jni_get_value (jobject obj, jmethodID mid, int arg)
 {
     JNIEnv *env = jni_get_env ();
     if (env == NULL)
         return NULL;
 
-    jintArray jarr = (jintArray) (*env)->CallObjectMethod (env, obj, mid);
+    jintArray jarr = NULL;
+    if (arg < 0) {
+        jarr = (jintArray) (*env)->CallObjectMethod (env, obj, mid);
+    } else {
+        jarr = (jintArray) (*env)->CallObjectMethod (env, obj, mid, (jint)arg);
+    }
+
+    if (jarr == NULL)
+        return NULL;
+
+    jsize len = (*env)->GetArrayLength (env, jarr);
+    if (len <= 0)
+        return NULL;
+
+    int *rarr = calloc ((size_t)len, sizeof *rarr);
+
+    jboolean iscopy;
+    jint* values = (*env)->GetIntArrayElements (env, jarr, &iscopy);
+
+    int i;
+    for (i = 0; i < len ; i++)
+    {
+        rarr[i] = (int)values[i];
+    }
+
+    if (iscopy == JNI_TRUE)
+        (*env)->ReleaseIntArrayElements (env, jarr, values, JNI_ABORT);
+
+    (*env)->DeleteLocalRef (env, jarr);
+
+    return rarr;
+}
+
+const int*
+jni_get_value2 (jobject obj, jmethodID mid, const char* str, int length)
+{
+    JNIEnv *env = jni_get_env ();
+    if (env == NULL)
+        return NULL;
+
+    // FIXME
+    // For some reason, sometimes we get a longer string from rust
+    char str2[length];
+    memcpy(str2, str, length);
+    str2[length] = '\0';
+
+    jintArray jarr =
+        (jintArray) (*env)->CallObjectMethod (env, obj, (*env)->NewStringUTF (env, str2));
     if (jarr == NULL)
         return NULL;
 

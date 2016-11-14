@@ -25,6 +25,14 @@ extern {
     pub fn bluetooth_device_get_uuids_size (device: *mut BluetoothDevice) -> c_int;
     pub fn bluetooth_device_get_rssi (device: *mut BluetoothDevice) -> c_int;
     pub fn bluetooth_device_get_tx_power (device: *mut BluetoothDevice) -> c_int;
+    pub fn bluetooth_device_get_manufacturer_data_keys (device: *mut BluetoothDevice) -> *const c_int;
+    pub fn bluetooth_device_get_manufacturer_data_keys_size (device: *mut BluetoothDevice) -> c_int;
+    pub fn bluetooth_device_get_manufacturer_data_values (device: *mut BluetoothDevice, key: c_int) -> *const c_int;
+    pub fn bluetooth_device_get_manufacturer_data_values_size (device: *mut BluetoothDevice, key: c_int) -> c_int;
+    pub fn bluetooth_device_get_service_data_keys (device: *mut BluetoothDevice) -> *const *const c_char;
+    pub fn bluetooth_device_get_service_data_keys_size (device: *mut BluetoothDevice) -> c_int;
+    pub fn bluetooth_device_get_service_data_values (device: *mut BluetoothDevice, key: *const c_char, length: c_int) -> *const c_int;
+    pub fn bluetooth_device_get_service_data_values_size (device: *mut BluetoothDevice, key: *const c_char, length: c_int) -> c_int;
     pub fn bluetooth_device_connect_gatt(device: *mut BluetoothDevice) -> c_int;
     pub fn bluetooth_device_disconnect(device: *mut BluetoothDevice) -> c_int;
     pub fn bluetooth_device_is_connected(device: *mut BluetoothDevice) -> c_int;

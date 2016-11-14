@@ -58,6 +58,38 @@ final class BluetoothDeviceWrapper {
         return mScanRecord.getTxPowerLevel();
     }
 
+    public int[] getManufacturerDataKeys() {
+        return mScanRecord.getManufacturerDataKeys();
+    }
+
+    public int getManufacturerDataKeysSize() {
+        return mScanRecord.getManufacturerDataKeysSize();
+    }
+
+    public int[] getManufacturerDataValues(int key) {
+        return mScanRecord.getManufacturerDataValues(key);
+    }
+
+    public int getManufacturerDataValuesSize(int key) {
+        return mScanRecord.getManufacturerDataValuesSize(key);
+    }
+
+    public Set<String> getServiceDataKeys() {
+        return mScanRecord.getServiceDataKeys();
+    }
+
+    public int getServiceDataKeysSize() {
+        return mScanRecord.getServiceDataKeysSize();
+    }
+
+    public int[] getServiceDataValues(String key) {
+        return mScanRecord.getServiceDataValues(key);
+    }
+
+    public int getServiceDataValuesSize(String key) {
+        return mScanRecord.getServiceDataValuesSize(key);
+    }
+
     public boolean isConnected() {
         return mConnected;
     }

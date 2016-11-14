@@ -1,5 +1,6 @@
 use ffi;
 use std::cell::Cell;
+use std::collections::HashMap;
 use std::error::Error;
 use std::os::raw::{c_char, c_int};
 use std::ptr::{self};
@@ -116,6 +117,81 @@ impl Device {
     pub fn get_tx_power(&self) -> Result<i16, Box<Error>> {
         let tx_power = unsafe { ffi::bluetooth_device_get_tx_power(self.device()) as i32 };
         Ok(tx_power as i16)
+    }
+
+    pub fn get_manufacturer_data(&self) -> Result<HashMap<u16, Vec<u8>>, Box<Error>> {
+        let mut m = HashMap::new();
+        unsafe {
+            // Map keys
+            let keys = ffi::bluetooth_device_get_manufacturer_data_keys(self.device());
+            check_null!(&keys, "No manufacturer data found!");
+            let max = ffi::bluetooth_device_get_manufacturer_data_keys_size(self.device()) as isize;
+            let mut k = vec!();
+            for i in 0..max {
+                let val_ptr = *keys.offset(i);
+                let val = (val_ptr as i32) as u16;
+                k.push(val);
+            }
+            if max > 0 {
+                ffi::jni_free_int_array(keys);
+            }
+            // Map values from key
+            for key in k {
+                let values = ffi::bluetooth_device_get_manufacturer_data_values(self.device(), key as i32);
+                check_null!(&values, "No manufacturer data found!");
+                let max = ffi::bluetooth_device_get_manufacturer_data_values_size(self.device(), key as i32) as isize;
+                let mut v = vec!();
+                for i in 0..max {
+                    let val_ptr = *values.offset(i);
+                    let val = (val_ptr as i32) as u8;
+                    v.push(val);
+                }
+                if max > 0 {
+                    ffi::jni_free_int_array(values);
+                }
+                m.insert(key, v);
+            }
+        }
+        Ok(m)
+    }
+
+    pub fn get_service_data(&self) -> Result<HashMap<String, Vec<u8>>, Box<Error>> {
+        let mut m = HashMap::new();
+        unsafe {
+            // Map keys
+            let keys = ffi::bluetooth_device_get_service_data_keys(self.device());
+            check_null!(&keys, "No service data found!");
+            let max = ffi::bluetooth_device_get_service_data_keys_size(self.device()) as isize;
+            let mut k = vec!();
+            for i in 0..max {
+                let u_ptr = *keys.offset(i);
+                let u = match utils::c_str_to_slice(&u_ptr) {
+                    None => continue,
+                    Some(uuid) => uuid.to_owned(),
+                };
+                k.push(u.clone());
+            }
+            if max > 0 {
+                ffi::jni_free_string_array(keys, max as i32);
+            }
+            // Map values from key
+            for key in k {
+                let values = ffi::bluetooth_device_get_service_data_values(self.device(), key.as_ptr() as *const c_char, key.len() as c_int);
+                check_null!(&values, "No service data found!");
+                let max = ffi::bluetooth_device_get_service_data_values_size(self.device(), key.as_ptr() as *const c_char, key.len() as c_int) as isize;
+                let mut v = vec!();
+                for i in 0..max {
+                    let val_ptr = *values.offset(i);
+                    let val = (val_ptr as i32) as u8;
+                    v.push(val);
+                }
+                if max > 0 {
+                    ffi::jni_free_int_array(values);
+                }
+                m.insert(key, v);
+            }
+        }
+        Ok(m)
     }
 
     pub fn get_appearance(&self) -> Result<u16, Box<Error>> {

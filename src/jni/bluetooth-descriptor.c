@@ -26,7 +26,7 @@ bluetooth_descriptor_get_uuid (BluetoothDescriptor *descriptor)
 const int*
 bluetooth_descriptor_get_value (BluetoothDescriptor *descriptor)
 {
-    return jni_get_value (descriptor->descriptor, g_ctx.descriptor_get_value);
+    return jni_get_value (descriptor->descriptor, g_ctx.descriptor_get_value, -1);
 }
 
 const int

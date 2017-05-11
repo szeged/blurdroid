@@ -1,5 +1,5 @@
 use std::env;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process;
 use std::process::{Command, Stdio};
 use std::fs;
@@ -61,7 +61,7 @@ fn android_main() {
         .arg("-d")
         .arg("target/java/classes/")
         .arg("-cp")
-        .arg(sdk_path.join("platforms/android-18/android.jar"))
+        .arg(find_android_platform(sdk_path))
         .args(java_files.as_slice())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
@@ -87,4 +87,26 @@ fn android_main() {
 
     println!("cargo:rustc-link-lib=static=blurdroid");
     println!("cargo:rustc-link-search=native={}", out_dir);
+}
+
+fn find_android_platform(sdk_path: &Path) -> PathBuf {
+    // Sorted android platforms by priority
+    let mut platforms = Vec::new();
+    // Allow configuration using env variable
+    if let Ok(platform) =  env::var("ANDROID_SDK_PLATFORM") {
+        platforms.push(platform);
+    }
+    // Fallback to other platforms
+    for v in (18..26).rev() {
+        platforms.push(v.to_string());
+    }
+
+    for platfom in platforms {
+        let path = sdk_path.join("platforms").join(format!("android-{}", platfom)).join("android.jar");
+        if path.exists() {
+            return path;
+        }
+    }
+
+    panic!("Couldn't find a correct android SDK platform. Please set ANDROID_SDK_PLATFORM env variable");
 }

@@ -19,7 +19,21 @@ fn android_main() {
     let sdk_path = env::var("ANDROID_SDK").ok().expect("Please set the ANDROID_SDK environment variable");
     let sdk_path = Path::new(&sdk_path);
 
+    let target = env::var("TARGET").unwrap();
+    let abi = if target.contains("armv7") {
+        "armeabi-v7a"
+    } else if target.contains("aarch64") {
+        "arm64-v8a"
+    } else if target.contains("arm") {
+        "armeabi"
+    } else if target.contains("x86") {
+        "x86"
+    } else {
+        panic!("Invalid target architecture {}", target);
+    };
+
     if Command::new(ndk_path.join("ndk-build"))
+        .arg(format!("APP_ABI={}", abi))
         .arg("-C")
         .arg("src/jni/")
         .stdout(Stdio::inherit())
@@ -33,7 +47,7 @@ fn android_main() {
     let out_dir = env::var("OUT_DIR").ok().expect("Cargo should have set the OUT_DIR environment variable");
 
     if Command::new("cp")
-        .arg("src/obj/local/armeabi/libblurdroid.a")
+        .arg(format!("src/obj/local/{}/libblurdroid.a", abi))
         .arg(&format!("{}", out_dir))
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())

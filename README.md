@@ -2,6 +2,7 @@
 ### Build
 ```
 $ #set ANDROID_NDK and ANDROID_SDK env
+$ rustup target add arm-linux-androideabi
 $ cargo build --target=arm-linux-androideabi
 ```
 ### Usage

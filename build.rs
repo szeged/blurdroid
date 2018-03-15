@@ -111,7 +111,7 @@ fn find_android_platform(sdk_path: &Path) -> PathBuf {
         platforms.push(platform);
     }
     // Fallback to other platforms
-    for v in (18..26).rev() {
+    for v in (18..27).rev() {
         platforms.push(v.to_string());
     }
 

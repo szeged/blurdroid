@@ -1,6 +1,6 @@
 [package]
 name = "blurdroid"
-version = "0.1.5"
+version = "0.1.6"
 description = "Bluetooth lib for Rust using Android's bluedroid"
 readme = "README.md"
 authors = ["Attila Dusnoki <adusnoki@inf.u-szeged.hu>"]

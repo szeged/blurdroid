@@ -32,10 +32,11 @@ fn android_main() {
         panic!("Invalid target architecture {}", target);
     };
 
+    let src_path = env::var("CARGO_MANIFEST_DIR").unwrap();
+
     if Command::new(ndk_path.join("ndk-build"))
         .arg(format!("APP_ABI={}", abi))
-        .arg("-C")
-        .arg("src/jni/")
+        .env("NDK_PROJECT_PATH", format!("{}/src", src_path))
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .status().unwrap().code().unwrap() != 0
@@ -47,7 +48,7 @@ fn android_main() {
     let out_dir = env::var("OUT_DIR").ok().expect("Cargo should have set the OUT_DIR environment variable");
 
     if Command::new("cp")
-        .arg(format!("src/obj/local/{}/libblurdroid.a", abi))
+        .arg(format!("{}/src/obj/local/{}/libblurdroid.a", src_path, abi))
         .arg(&format!("{}", out_dir))
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
@@ -59,7 +60,7 @@ fn android_main() {
 
     if Command::new("mkdir")
         .arg("-p")
-        .arg("target/java/classes/")
+        .arg(&format!("{}/target/java/classes/", out_dir))
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .status().unwrap().code().unwrap() != 0
@@ -68,12 +69,12 @@ fn android_main() {
         process::exit(1)
     }
 
-    let java_files = fs::read_dir("src/java/hu/uszeged/bluetooth").unwrap().map(|p| p.unwrap().path()).collect::<Vec<_>>();
+    let java_files = fs::read_dir(format!("{}/src/java/hu/uszeged/bluetooth", src_path)).unwrap().map(|p| p.unwrap().path()).collect::<Vec<_>>();
     let java_files = java_files.iter().map(|p| p.as_os_str().to_str().unwrap()).collect::<Vec<_>>();
 
     if Command::new("javac")
         .arg("-d")
-        .arg("target/java/classes/")
+        .arg(&format!("{}/target/java/classes/", out_dir))
         .arg("-cp")
         .arg(find_android_platform(sdk_path))
         .args(java_files.as_slice())
@@ -89,7 +90,7 @@ fn android_main() {
         .arg("cvf")
         .arg(&format!("{}/blurdroid.jar", out_dir))
         .arg("-C")
-        .arg("target/java/classes/")
+        .arg(&format!("{}/target/java/classes/", out_dir))
         .arg("hu")
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())

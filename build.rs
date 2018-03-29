@@ -26,7 +26,7 @@ fn android_main() {
         "arm64-v8a"
     } else if target.contains("arm") {
         "armeabi"
-    } else if target.contains("x86") {
+    } else if target.contains("x86") || target.contains("i686") {
         "x86"
     } else {
         panic!("Invalid target architecture {}", target);
